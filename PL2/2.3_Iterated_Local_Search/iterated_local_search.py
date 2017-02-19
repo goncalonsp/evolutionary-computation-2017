@@ -1,5 +1,5 @@
 """
-Números de João Brandão.
+Numeros de Joao Brandao.
 
 Algoritmo: Iterated Local Search
 Pertubation: Random Neighbor
@@ -32,7 +32,7 @@ def iterated_local_search(problem_size, max_iter, fitness):
     it = 0
     candidate = random_indiv(problem_size)
     while it < max_iter:
-        candidate = random_neighbor(candidate)
+        candidate = random_neighbor(candidate,fitness)
         candidate, elapsed_it = jb_hc(problem_size, max_iter - it, candidate, fitness)
         it += elapsed_it
     return candidate
