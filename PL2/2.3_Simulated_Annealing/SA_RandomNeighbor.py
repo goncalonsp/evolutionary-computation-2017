@@ -67,10 +67,10 @@ def random_indiv(size):
 
 # Random neighbor
 def random_neighbor(individual, fitness):
-    solution = individual[:]
-    pos = random.randint(0, len(individual)-1)
-    solution[pos]= (solution[pos] + 1) % 2
-    return solution
+    neighbor = individual[:]
+    position = random.randint(0,len(neighbor) - 1)
+    neighbor[position] = (neighbor[position] + 1) % 2
+    return neighbor
 
 # Neighbor Solution
 def neighbor_solution(individual, fitness):

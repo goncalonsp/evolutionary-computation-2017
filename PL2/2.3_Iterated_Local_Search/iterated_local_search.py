@@ -1,10 +1,11 @@
 """
 Números de João Brandão.
 
-Algoritmo: Hill-climbing
-Pertubation: best neighbor
+Algoritmo: Iterated Local Search
+Pertubation: Random Neighbor
 Representation: binary
 
+Based on work by Ernesto Costa
 """
 
 __author__ = 'Ernesto Costa'
@@ -31,7 +32,7 @@ def iterated_local_search(problem_size, max_iter, fitness):
     it = 0
     candidate = random_indiv(problem_size)
     while it < max_iter:
-        candidate = tweak(candidate)
+        candidate = random_neighbor(candidate)
         candidate, elapsed_it = jb_hc(problem_size, max_iter - it, candidate, fitness)
         it += elapsed_it
     return candidate
@@ -40,8 +41,8 @@ def iterated_local_search(problem_size, max_iter, fitness):
 def random_indiv(size):
     return [random.randint(0,1) for i in range(size)]
 
-# Tweak Individual
-def tweak(individual):
+# Random neighbor
+def random_neighbor(individual, fitness):
     neighbor = individual[:]
     position = random.randint(0,len(neighbor) - 1)
     neighbor[position] = (neighbor[position] + 1) % 2
