@@ -8,7 +8,7 @@ Representation: binary
 Based on work by Ernesto Costa
 """
 
-__author__ = 'Ernesto Costa'
+__author__ = 'Gabriel Amarista (), Goncalo Pereira (2008119715), Sebastian Rehfeldt ()'
 __date__ = 'February 2017'
 
 
