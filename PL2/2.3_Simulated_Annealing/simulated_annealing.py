@@ -1,10 +1,11 @@
 """
-Números de João Brandão.
+Numeros de Joao Brandao.
 
 Algoritmo: Hill-climbing
 Pertubation: best neighbor
 Representation: binary
 
+Based on work by Ernesto Costa
 """
 
 __author__ = 'Ernesto Costa'
