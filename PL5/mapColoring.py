@@ -57,7 +57,7 @@ def evaluate(countries):
     num_color, num_violations = getColorsAndViolations(countries)
 
     #Todo: experimentation is need here
-    alpha = 2
+    alpha = 1
     beta = 1
 
     #this value should be high
@@ -85,6 +85,9 @@ def getColorsAndViolations(countries):
     return num_colors, num_violations
 
 
+
+
+
 if __name__ == '__main__':
     """Creates all data structures given the data file"""
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -96,17 +99,29 @@ if __name__ == '__main__':
     my_merit = merit(map,mappingDict)
     size_cromo = len(mappingDict)
 
-    #numb_generations,size_pop, size_cromo, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func
-    best = sea(30,20, size_cromo, 0.05,  0.9,tour_sel(3),one_point_cross,muta_bin,sel_survivors_elite(0.1), my_merit)
+    #I decided to store this in variables instead of using the values in the function call so that the values are the same for each function call below
+    cross_function = one_point_cross
+    muta_function = muta_rand
+    prob_muta = 0.05
+    prob_cross = 0.9
+    tour_num = 3
+    elite_percentage = 0.1
+    numb_generations = 30
+    size_pop = 20
+
+    #better use the one below
+    #best = sea(numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
+    
+    #use this for getting a plot for a single run
+    best, stat, stat_average = sea_for_plot(numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
+    display_stat_1(stat,stat_average)  
+    
+    #used for printing information about best individual
+    #works with both sea functions
     print(phenotype(best[0],map,mappingDict))
     print("Fitness: "+str(best[1]))
     print("Colors: "+str(getColorsAndViolations(phenotype(best[0],map,mappingDict))[0]))
     print("Violations: "+str(getColorsAndViolations(phenotype(best[0],map,mappingDict))[1]))
     
-    #best, stat, stat_average = sea_perm_for_plot(30,20, size_cromo, 0.1,  0.8,tour_sel(3),order_cross,muta_cromo,sel_survivors_elite(0.1), my_merit)
-    #display_stat_1(stat,stat_average)  
-    
-    
-    #boa, best_average = run(5,30,20, size_cromo, 0.1,  0.8,tour_sel(3),order_cross,muta_cromo,sel_survivors_elite(0.1), my_merit)
-    #display_stat_n(boa,best_average)      
-    
+    #boa, best_average = run(5,numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
+    #display_stat_n(boa,best_average)

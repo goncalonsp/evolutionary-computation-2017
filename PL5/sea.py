@@ -11,6 +11,15 @@ __date__ = 'February 2016'
 from random import random,randint, sample
 from operator import itemgetter
 
+def run(numb_runs,numb_generations,size_pop, size_cromo, prob_mut,  prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
+    statistics = []
+    for i in range(numb_runs):
+        best,stat_best,stat_aver = sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut,  prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
+        statistics.append(stat_best)
+    stat_gener = list(zip(*statistics))
+    boa = [max(g_i) for g_i in stat_gener] # maximization
+    aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
+    return boa,aver_gener
 
 # Simple [Binary] Evolutionary Algorithm		
 def sea(numb_generations,size_pop, size_cromo, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
@@ -92,16 +101,16 @@ def gera_indiv(size_cromo):
     indiv = [randint(1,size_cromo) for i in range(size_cromo)]
     return indiv
 
-# Variation operators: Binary mutation	    
-def muta_bin(indiv,prob_muta):
+# Variation operators: Random mutation	    
+def muta_rand(indiv,prob_muta):
     # Mutation by gene
     # Todo: try out different mutation probabilites
     cromo = indiv[:]
     for i in range(len(indiv)):
-        cromo[i] = muta_bin_gene(cromo[i],prob_muta,len(indiv))
+        cromo[i] = muta_rand_gene(cromo[i],prob_muta,len(indiv))
     return cromo
 
-def muta_bin_gene(gene, prob_muta, size_cromo):
+def muta_rand_gene(gene, prob_muta, size_cromo):
     g = gene
     value = random()
     if value < prob_muta:
