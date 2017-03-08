@@ -1,0 +1,8 @@
+Country: PT 	Neighbors: SP
+Country: SP 	Neighbors: PT FR
+Country: FR 	Neighbors: SP BE LU SW IT
+Country: BE 	Neighbors: FR HO LU
+Country: LU 	Neighbors: FR BE
+Country: SW 	Neighbors: FR IT
+Country: IT 	Neighbors: FR SW
+Country: HO 	Neighbors: BE
