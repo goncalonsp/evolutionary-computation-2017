@@ -1,7 +1,8 @@
 """
 sea_bin_visual.py
 A very simple EA for binary representation.
-Ernesto Costa, March 2015 & February 2016
+Authors: , Sebastian Rehfeldt, 
+based on Ernesto Costa, March 2015 & February 2016
 """
 
 __author__ = 'Ernesto Costa'

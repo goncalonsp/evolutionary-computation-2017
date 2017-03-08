@@ -1,6 +1,6 @@
 """
 mapColoring.py
-, Sebastian Rehfeldt, 
+Authors:  , Sebastian Rehfeldt, 
 """
 
 #Todo: add names
