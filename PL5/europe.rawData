@@ -1,0 +1,44 @@
+Country: PT 	Neighbors: SP
+Country: SP 	Neighbors: PT FR
+Country: FR 	Neighbors: SP BE LU CH IT
+Country: BE 	Neighbors: FR NL LU DE
+Country: LU 	Neighbors: FR BE DE
+Country: CH 	Neighbors: FR IT DE AT LI
+Country: LI 	Neighbors: CH AT
+Country: IT 	Neighbors: FR CH AT SI SM VA
+Country: NL 	Neighbors: BE DE 
+Country: DE 	Neighbors: FR LU BE NL CH AT CZ DK PL
+Country: DK 	Neighbors: DE
+Country: AT 	Neighbors: CH IT SI DE CZ SK HU LI
+Country: SM 	Neighbors: IT
+Country: VA 	Neighbors: IT
+Country: CZ 	Neighbors: DE AT SK PL
+Country: SI 	Neighbors: IT AT HR HU
+Country: HR 	Neighbors: SI HU RS BA ME
+Country: BA 	Neighbors: HR RS ME
+Country: RS 	Neighbors: BA ME AL MK BG RO HU HR
+Country: ME 	Neighbors: BA RS AL HR
+Country: AL 	Neighbors: ME RS MK GR
+Country: MK 	Neighbors: AL GR BG RS
+Country: GR 	Neighbors: AL MK BG TR
+Country: TR 	Neighbors: GR BG AM GS
+Country: AM 	Neighbors: TR GS AZ
+Country: GS 	Neighbors: TR AM AZ RU
+Country: AZ 	Neighbors: AM GS RU
+Country: BG 	Neighbors: RS MK GR TR RO
+Country: RO 	Neighbors: RS HU BG UA MD
+Country: HU 	Neighbors: AT SI HR RS SK RO UA
+Country: SK 	Neighbors: AT CZ PL UA HU
+Country: MD 	Neighbors: RO UA
+Country: PL 	Neighbors: CZ DE LT SK UA RU BY
+Country: UA 	Neighbors: MD RO HU SK PL BY RU
+Country: BY 	Neighbors: UA PL RU LT LV
+Country: LT 	Neighbors: RU PL BY LV
+Country: LV 	Neighbors: LT BY RU EE
+Country: EE 	Neighbors: LV RU
+Country: RU 	Neighbors: GS AZ UA BY LV LT PL EE FI NO
+Country: FI 	Neighbors: RU NO SE
+Country: SE 	Neighbors: FI NO
+Country: NO 	Neighbors: SE FI RU
+Country: GB 	Neighbors: IE
+Country: IE 	Neighbors: GB
