@@ -8,7 +8,6 @@ Authors:  , Sebastian Rehfeldt,
 from sea import *
 from utils import *
 from math import sqrt
-from sets import Set
 import os 
 
 # interface
@@ -47,16 +46,17 @@ def phenotype(genotype,map,mappingDict):
     # I decided to use also a dictionary here for the phenotype to get the neighbors efficiently in the evaluate function
     pheno = {}
     for ind, color in enumerate(genotype):
-        pheno[mappingDict[ind]] =(color,map[mappingDict[ind]]) 
+        pheno[mappingDict[ind]] = (color,map[mappingDict[ind]]) 
 
     return pheno
 
 def evaluate(countries):
+	#The argument "countries" is the phenotype of the individual
     #Todo: Implement our approach
     num_countries = len(countries)
     num_color, num_violations = getColorsAndViolations(countries)
 
-    #Todo: experimentation is need here
+    #Todo: experimentation is needed here
     alpha = 1
     beta = 1
 
@@ -91,7 +91,7 @@ def getColorsAndViolations(countries):
 if __name__ == '__main__':
     """Creates all data structures given the data file"""
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    map, mappingDict  = readData(dir_path+'/countries.rawData')
+    map, mappingDict  = readData(dir_path+'/europe.rawData')
 
     #just for testing phenotype function
     #print(phenotype([1,0,0,0,0,0,0,0],map,mappingDict))
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     prob_cross = 0.9
     tour_num = 3
     elite_percentage = 0.1
-    numb_generations = 30
+    numb_generations = 100
     size_pop = 20
 
     #better use the one below

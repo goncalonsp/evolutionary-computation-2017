@@ -9,13 +9,13 @@ __author__ = 'Ernesto Costa'
 __date__ = 'February 2016'
 
 
-from random import random,randint, sample
+from random import random,randint,sample
 from operator import itemgetter
 
-def run(numb_runs,numb_generations,size_pop, size_cromo, prob_mut,  prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
+def run(numb_runs,numb_generations,size_pop,size_cromo,prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors,fitness_func):
     statistics = []
     for i in range(numb_runs):
-        best,stat_best,stat_aver = sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut,  prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
+        best,stat_best,stat_aver = sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
         statistics.append(stat_best)
     stat_gener = list(zip(*statistics))
     boa = [max(g_i) for g_i in stat_gener] # maximization
