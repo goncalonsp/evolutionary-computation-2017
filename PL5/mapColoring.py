@@ -15,7 +15,7 @@ import os
 
 def readData(file):
     """ From a TSP format file return the matrix of coordinates."""
-    map = {}
+    neighbors = {}
     mappingDict = []
     with  open(file) as f:
 	
@@ -23,16 +23,16 @@ def readData(file):
         for line in data:
             words = line.split()
 
-            #map will be our graph - it is a dictionary with a country as key and lists of neighbors as values
+            #neighbors will be our graph - it is a dictionary with a country as key and lists of neighbors as values
             #it is a map because we want to get neighbors for a given country efficiently
-            map[words[1]] = words[3:]
+            neighbors[words[1]] = words[3:]
 
-            #our individuals will be representated by an array containing integers
+            #our individuals will be represented by an array containing integers
             #mappingDict is used to map a color on a specific index to a country name
             mappingDict.append(words[1])
     
     f.closed
-    return map, mappingDict
+    return neighbors, mappingDict
 
 
 # fitness
@@ -41,12 +41,12 @@ def merit(map,mappingDict):
         return evaluate(phenotype(indiv,map,mappingDict))
     return merit_
 
-def phenotype(genotype,map,mappingDict):
+def phenotype(genotype,neighbors,mappingDict):
     """ Return ther phenotype."""
     # I decided to use also a dictionary here for the phenotype to get the neighbors efficiently in the evaluate function
     pheno = {}
     for ind, color in enumerate(genotype):
-        pheno[mappingDict[ind]] = (color,map[mappingDict[ind]]) 
+        pheno[mappingDict[ind]] = (color,neighbors[mappingDict[ind]]) 
 
     return pheno
 
@@ -85,18 +85,15 @@ def getColorsAndViolations(countries):
     return num_colors, num_violations
 
 
-
-
-
 if __name__ == '__main__':
     """Creates all data structures given the data file"""
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    map, mappingDict  = readData(dir_path+'/europe.rawData')
+    neighbors, mappingDict  = readData(dir_path+'/europe.rawData')
 
     #just for testing phenotype function
-    #print(phenotype([1,0,0,0,0,0,0,0],map,mappingDict))
+    #print(phenotype([1,0,0,0,0,0,0,0],neighbors,mappingDict))
     
-    my_merit = merit(map,mappingDict)
+    my_merit = merit(neighbors,mappingDict)
     size_cromo = len(mappingDict)
 
     #I decided to store this in variables instead of using the values in the function call so that the values are the same for each function call below
@@ -118,10 +115,10 @@ if __name__ == '__main__':
     
     #used for printing information about best individual
     #works with both sea functions
-    print(phenotype(best[0],map,mappingDict))
+    print(phenotype(best[0],neighbors,mappingDict))
     print("Fitness: "+str(best[1]))
-    print("Colors: "+str(getColorsAndViolations(phenotype(best[0],map,mappingDict))[0]))
-    print("Violations: "+str(getColorsAndViolations(phenotype(best[0],map,mappingDict))[1]))
+    print("Colors: "+str(getColorsAndViolations(phenotype(best[0],neighbors,mappingDict))[0]))
+    print("Violations: "+str(getColorsAndViolations(phenotype(best[0],neighbors,mappingDict))[1]))
     
     #boa, best_average = run(5,numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
     #display_stat_n(boa,best_average)
