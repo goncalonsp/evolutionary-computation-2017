@@ -99,7 +99,7 @@ def gera_indiv(size_cromo):
     # random initialization
     # we chose colors from 1 to #countries
     # Todo: test out different initializations (all same color, each color once, random)
-    indiv = [randint(1,size_cromo) for i in range(size_cromo)]
+    indiv = [randint(1,4) for i in range(size_cromo)]
     return indiv
 
 # Variation operators: Random mutation	    
@@ -116,7 +116,7 @@ def muta_rand_gene(gene, prob_muta, size_cromo):
     value = random()
     if value < prob_muta:
         #Todo: Try out different mutation
-        g = randint(1,size_cromo)
+        g = randint(1,4)
     return g
 
 # Variation Operators :Crossover
@@ -204,23 +204,3 @@ def best_pop(populacao):
 
 def average_pop(populacao):
     return sum([fit for cromo,fit in populacao])/len(populacao)
-    
-# -------------------  Problem Specific Definitions  ------------  
-# -------------------  One max problem --------------------------
-
-def merito(indiv):
-    # wrapper for fitness evaluation
-    return evaluate(fenotipo(indiv))
-
-def fenotipo(indiv):
-    return indiv
-
-
-def evaluate(indiv):
-    return sum(indiv)
-
-if __name__ == '__main__':
-    #to test the code with oneMax function
-    prefix = '/Users/ernestojfcosta/tmp/'
-    best_1 = sea(100, 20,100,0.01,0.9,tour_sel(3),one_point_cross,muta_bin,sel_survivors_elite(0.02), merito)
-    display(best_1,fenotipo)

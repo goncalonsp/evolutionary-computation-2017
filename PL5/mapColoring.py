@@ -9,12 +9,24 @@ from sea import *
 from utils import *
 from math import sqrt
 import os 
+import argparse
 
 # interface
 # from file to coordinates
 
 def readData(file):
-    """ From a TSP format file return the matrix of coordinates."""
+    """ From a Mac Coloring format file return the graph representation."""
+    """
+    file contents will be in the form of:
+        Country: PT     Neighbors: SP
+        Country: SP     Neighbors: PT FR
+        Country: FR     Neighbors: SP BE LU SW IT
+        Country: BE     Neighbors: FR HO LU
+        Country: LU     Neighbors: FR BE
+        Country: SW     Neighbors: FR IT
+        Country: IT     Neighbors: FR SW
+        Country: HO     Neighbors: BE
+    """
     neighbors = {}
     mappingDict = []
     with  open(file) as f:
@@ -23,12 +35,14 @@ def readData(file):
         for line in data:
             words = line.split()
 
-            #neighbors will be our graph - it is a dictionary with a country as key and lists of neighbors as values
-            #it is a map because we want to get neighbors for a given country efficiently
+            # neighbors will be our graph - it is a dictionary with a country as key and lists of neighbors as values
+            # it is a map because we want to get neighbors for a given country efficiently
+            #       example: {'PT': ['SP'], 'SP': ['PT', 'FR'], ... }
             neighbors[words[1]] = words[3:]
 
-            #our individuals will be represented by an array containing integers
-            #mappingDict is used to map a color on a specific index to a country name
+            # our individuals will be represented by an array containing integers
+            # mappingDict is used to map a color on a specific index to a country name
+            #       example: ['PT', 'SP', 'FR', ... ]
             mappingDict.append(words[1])
     
     f.closed
@@ -44,6 +58,7 @@ def merit(map,mappingDict):
 def phenotype(genotype,neighbors,mappingDict):
     """ Return ther phenotype."""
     # I decided to use also a dictionary here for the phenotype to get the neighbors efficiently in the evaluate function
+    #       example: { 'PT': (1, ['ES']), 'ES': (3, ['PT', 'FR']), ... }
     pheno = {}
     for ind, color in enumerate(genotype):
         pheno[mappingDict[ind]] = (color,neighbors[mappingDict[ind]]) 
@@ -51,19 +66,19 @@ def phenotype(genotype,neighbors,mappingDict):
     return pheno
 
 def evaluate(countries):
-	#The argument "countries" is the phenotype of the individual
-    #Todo: Implement our approach
+	# The argument "countries" is the phenotype of the individual
+    # Todo: Implement our approach
     num_countries = len(countries)
     num_color, num_violations = getColorsAndViolations(countries)
 
-    #Todo: experimentation is needed here
-    alpha = 1
-    beta = 1
+    # Todo: experimentation is needed here
+    alpha = 2
+    beta = 2
 
-    #this value should be high
-    #this value decreases with number of colors used (this is really bad and is factored stronger than the number of violations)
-    #this value decreases with number of violations
-    #we can drop the num_countries, but I like to have positive numbers for the fitness value :)
+    # this value should be high
+    # this value decreases with number of colors used (this is really bad and is factored stronger than the number of violations)
+    # this value decreases with number of violations
+    # we can drop the num_countries, but I like to have positive numbers for the fitness value :)
     fitnessValue = num_countries - alpha*num_color - beta*num_violations
 
     return fitnessValue
@@ -86,39 +101,60 @@ def getColorsAndViolations(countries):
 
 
 if __name__ == '__main__':
-    """Creates all data structures given the data file"""
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    neighbors, mappingDict  = readData(dir_path+'/europe.rawData')
+    parser = argparse.ArgumentParser(
+        description='Solves the Map Coloring problem using the Simple Evolutionary Algorithm.'
+        )
+    parser.add_argument(
+        'inputfile',
+        help='A file in Map Coloring format.')
+    parser.add_argument(
+        '-r', '--runs', type=int, nargs='?',
+        help='Number of separate algorithm runs for statistical analysis.')
+    parser.add_argument(
+        '-p', '--plot', action='store_true',
+        help='Turns on plotting capabilities.')
+    args = parser.parse_args()
+    # Uncomment this line to debug the arguments
+    #print(args)
 
-    #just for testing phenotype function
-    #print(phenotype([1,0,0,0,0,0,0,0],neighbors,mappingDict))
+    # Creates all data structures given the data file
+    neighbors, mappingDict = readData(args.inputfile)
+
+    # just for testing phenotype function
+    # print(phenotype([1,0,0,0,0,0,0,0],neighbors,mappingDict))
     
     my_merit = merit(neighbors,mappingDict)
     size_cromo = len(mappingDict)
 
-    #I decided to store this in variables instead of using the values in the function call so that the values are the same for each function call below
+    # I decided to store this in variables instead of using the values in the function call so that the values are the same for each function call below
     cross_function = one_point_cross
     muta_function = muta_rand
     prob_muta = 0.05
     prob_cross = 0.9
     tour_num = 3
     elite_percentage = 0.1
-    numb_generations = 100
+    numb_generations = 1000
     size_pop = 20
 
-    #better use the one below
-    #best = sea(numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
+    if args.runs == None:
+        # Single run mode
+
+        if args.plot == True: 
+            # Use this for getting a plot for a single run
+            best, stat, stat_average = sea_for_plot(numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
+            display_stat_1(stat,stat_average)  
+        
+        else:
+            # Use this for running just the algorithm
+            best = sea(numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
+
+        # Used for printing information about best individual
+        print(phenotype(best[0],neighbors,mappingDict))
+        print("Fitness: "+str(best[1]))
+        print("Colors: "+str(getColorsAndViolations(phenotype(best[0],neighbors,mappingDict))[0]))
+        print("Violations: "+str(getColorsAndViolations(phenotype(best[0],neighbors,mappingDict))[1]))
     
-    #use this for getting a plot for a single run
-    best, stat, stat_average = sea_for_plot(numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
-    display_stat_1(stat,stat_average)  
-    
-    #used for printing information about best individual
-    #works with both sea functions
-    print(phenotype(best[0],neighbors,mappingDict))
-    print("Fitness: "+str(best[1]))
-    print("Colors: "+str(getColorsAndViolations(phenotype(best[0],neighbors,mappingDict))[0]))
-    print("Violations: "+str(getColorsAndViolations(phenotype(best[0],neighbors,mappingDict))[1]))
-    
-    #boa, best_average = run(5,numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
-    #display_stat_n(boa,best_average)
+    else:
+        boa, best_average = run(args.runs,numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
+        if args.plot == True: 
+            display_stat_n(boa,best_average)
