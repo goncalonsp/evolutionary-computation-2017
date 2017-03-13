@@ -113,6 +113,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '-p', '--plot', action='store_true',
         help='Turns on plotting capabilities.')
+    parser.add_argument(
+        '-s', '--save', action='store_true',
+        help='Saves plots into files.')
     args = parser.parse_args()
     # Uncomment this line to debug the arguments
     #print(args)
@@ -126,7 +129,8 @@ if __name__ == '__main__':
     my_merit = merit(neighbors,mappingDict)
     size_cromo = len(mappingDict)
 
-    # I decided to store this in variables instead of using the values in the function call so that the values are the same for each function call below
+    # I decided to store this in variables instead of using the values in the 
+    # function call so that the values are the same for each function call below
     cross_function = one_point_cross
     muta_function = muta_rand
     prob_muta = 0.05
@@ -139,15 +143,20 @@ if __name__ == '__main__':
     if args.runs == None:
         # Single run mode
 
-        if args.plot == True: 
-            # Use this for getting a plot for a single run
-            best, stat, stat_average = sea_for_plot(numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
-            display_stat_1(stat,stat_average)  
-        
-        else:
+        if not args.plot and not args.save:
             # Use this for running just the algorithm
-            best = sea(numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
+            best = sea(numb_generations, size_pop, size_cromo, prob_muta, prob_cross, tour_sel(tour_num), cross_function, muta_function, sel_survivors_elite(elite_percentage), my_merit)
 
+        else:
+            # Use this for getting a plot for a single run
+            best, stat, stat_average = sea_for_plot(numb_generations, size_pop, size_cromo, prob_muta, prob_cross, tour_sel(tour_num), cross_function, muta_function, sel_survivors_elite(elite_percentage), my_merit)
+            if args.plot:
+                display_stat_1(stat, stat_average)
+            if args.save:
+                file_name = 'stat_1_plot.png'
+                print("Saved plot to file '" + file_name + "'.")
+                save_stat_1(stat, stat_average, file_name)
+            
         # Used for printing information about best individual
         print(phenotype(best[0],neighbors,mappingDict))
         print("Fitness: "+str(best[1]))
@@ -156,5 +165,9 @@ if __name__ == '__main__':
     
     else:
         boa, best_average = run(args.runs,numb_generations,size_pop, size_cromo, prob_muta,  prob_cross,tour_sel(tour_num),cross_function,muta_function,sel_survivors_elite(elite_percentage), my_merit)
-        if args.plot == True: 
+        if args.plot: 
             display_stat_n(boa,best_average)
+        if args.save:
+            file_name = 'stat_n_plot.png'
+            print("Saved plot to file '" + file_name + "'.")
+            save_stat_n(boa, best_average, file_name)
