@@ -17,10 +17,17 @@ def run(numb_runs,numb_generations,size_pop, size_cromo, prob_mut, prob_cross,se
         seed(i)
         best, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
         statistics.append(stat_best)
+        write_run(best)
+        print('Percentagem: ' + str( (i*100) / numb_runs) )
     stat_gener = list(zip(*statistics))
     boa = [max(g_i) for g_i in stat_gener] # minimization
     aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
     return boa,aver_gener
+
+def write_run (indiv):
+    f = open('jb_runs.out', 'a+')
+    f.write(str(indiv[1]) + '\n')
+    f.close()
 
 # Simple [Binary] Evolutionary Algorithm		
 def sea(numb_generations,size_pop, size_cromo, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
