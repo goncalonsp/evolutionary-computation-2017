@@ -47,7 +47,8 @@ if __name__ == '__main__':
 	generations = 1500
 	pop_size = 100
 	cromo_size = 100
-	prob_muta = 0.05 #0.001, 0.05, 0.1
+	prob_muta = 0.01 #0.001, 0.05, 0.1
+>>>>>>> origin/master
 	prob_cross = 0.70
 	tour_size = 3
 	elite_percent = 0.1
