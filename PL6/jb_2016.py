@@ -43,11 +43,11 @@ def write_run (indiv):
 
 
 if __name__ == '__main__':
-	n_runs = 10
-	generations = 150
+	n_runs = 30
+	generations = 1500
 	pop_size = 100
-	cromo_size = 25
-	prob_muta = 0.01 #0.001, 0.05, 0.1
+	cromo_size = 100
+	prob_muta = 0.05 #0.001, 0.05, 0.1
 	prob_cross = 0.70
 	tour_size = 3
 	elite_percent = 0.1
@@ -58,4 +58,3 @@ if __name__ == '__main__':
 	#print('Best: ', boa[-1])
 
 	display_stat_n(boa,stat_average_oa)
-    
