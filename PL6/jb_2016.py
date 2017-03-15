@@ -48,14 +48,14 @@ if __name__ == '__main__':
 	pop_size = 100
 	cromo_size = 100
 	prob_muta = 0.01 #0.001, 0.05, 0.1
-	prob_cross = 0.75
+	prob_cross = 0.70
 	tour_size = 3
 	elite_percent = 0.1
 	#run(numb_runs,numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
-	best,stat,stat_average = run(n_runs, generations, pop_size,cromo_size,prob_muta,prob_cross,tour_sel(tour_size),one_point_cross,muta_bin,sel_survivors_elite(elite_percent), fitness)
-	numb_viola = viola(phenotype(best),cromo_size)
-	print('Violations: ',numb_viola)
-	print('Best: ', best)
+	boa,stat_average_oa = run(n_runs, generations, pop_size,cromo_size,prob_muta,prob_cross,tour_sel(tour_size),one_point_cross,muta_bin,sel_survivors_elite(elite_percent), fitness)
+	#numb_viola = viola(phenotype(boa[-1]),cromo_size)
+	#print('Violations: ',numb_viola)
+	#print('Best: ', boa[-1])
 
-	display_stat_1(stat,stat_average)
+	display_stat_n(boa,stat_average_oa)
     

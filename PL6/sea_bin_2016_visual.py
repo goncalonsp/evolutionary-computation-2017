@@ -18,7 +18,7 @@ def run(numb_runs,numb_generations,size_pop, size_cromo, prob_mut, prob_cross,se
         best, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
         statistics.append(stat_best)
     stat_gener = list(zip(*statistics))
-    boa = [min(g_i) for g_i in stat_gener] # minimization
+    boa = [max(g_i) for g_i in stat_gener] # minimization
     aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
     return boa,aver_gener
 
