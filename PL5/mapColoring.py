@@ -8,8 +8,10 @@ Authors:  , Sebastian Rehfeldt,
 from sea import *
 from utils import *
 from math import sqrt
+from multiprocessing import Pool
 import os 
 import argparse
+import json
 
 # interface
 # from file to coordinates
@@ -99,6 +101,19 @@ def getColorsAndViolations(countries):
     num_violations = num_violations/2
     return num_colors, num_violations
 
+def get_config(config, keys, default):
+    if not keys: return config
+    if not config: return default
+    
+    if isinstance(config,dict):
+        if keys[0] in config: 
+            return get_config(config[keys[0]], keys[1:], default)
+    if isinstance(config,list):
+        if len(config) >= keys[0]:
+            return get_config(config[keys[0]], keys[1:], default)
+
+    return default
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -116,10 +131,16 @@ if __name__ == '__main__':
     parser.add_argument(
         '-s', '--save', action='store_true',
         help='Saves plots into files.')
+    parser.add_argument(
+        '-c', '--config', type=open,
+        help='Config file for the SEA Algorithm.')
     args = parser.parse_args()
-    # Uncomment this line to debug the arguments
-    #print(args)
+    #print(args) # Uncomment this line to debug the arguments
 
+    # Load configuration file
+    config = (json.load(args.config) if args.config else None)
+    #print(config) # Uncomment this line to debug the arguments
+        
     # Creates all data structures given the data file
     neighbors, mappingDict = readData(args.inputfile)
 
@@ -131,14 +152,17 @@ if __name__ == '__main__':
 
     # I decided to store this in variables instead of using the values in the 
     # function call so that the values are the same for each function call below
-    cross_function = one_point_cross
-    muta_function = muta_rand
-    prob_muta = 0.05
-    prob_cross = 0.9
-    tour_num = 3
-    elite_percentage = 0.1
-    numb_generations = 1000
-    size_pop = 20
+    # The following calls to get_config will search the provided config file for each variable value
+    # if no value is found or the config file is not specified each default value is assumed for each variable
+    cross_function = locals()[ get_config(config, ['crossover', 'function'], "one_point_cross") ] 
+    # "locals()[]"" will get the function by reflection using the function name as key
+    muta_function = locals()[ get_config(config, ['mutation', 'function'], "muta_rand") ]
+    prob_muta = get_config(config, ['mutation', 'probability'], 0.05)
+    prob_cross = get_config(config, ['crossover', 'probability'], 0.9)
+    tour_num = get_config(config, ['tournament_size'], 3)
+    elite_percentage = get_config(config, ['elite_percentage'], 0.1)
+    numb_generations = get_config(config, ['number_generations'], 1000)
+    size_pop = get_config(config, ['size_population'], 20)
 
     if args.runs == None:
         # Single run mode
