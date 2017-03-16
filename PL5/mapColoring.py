@@ -72,18 +72,24 @@ def evaluate(countries):
     # Todo: Implement our approach
     num_countries = len(countries)
     num_color, num_violations = getColorsAndViolations(countries)
+    value_color_sum = getColorsValueSum(countries)
 
     # Todo: experimentation is needed here
     alpha = 2
     beta = 2
 
+    # sum of colors will decrease fitness
+    charlie = 0.2
+
     # this value should be high
     # this value decreases with number of colors used (this is really bad and is factored stronger than the number of violations)
     # this value decreases with number of violations
     # we can drop the num_countries, but I like to have positive numbers for the fitness value :)
-    fitnessValue = num_countries - alpha*num_color - beta*num_violations
+    fitnessValue = num_countries - alpha*num_color - beta*num_violations - charlie*value_color_sum
 
     return fitnessValue
+
+
 
 def getColorsAndViolations(countries):
     colors = set()
@@ -100,6 +106,18 @@ def getColorsAndViolations(countries):
     num_colors = len(colors)
     num_violations = num_violations/2
     return num_colors, num_violations
+
+def getColorsValueSum(countries):
+    colors = set()
+    value_color_sum = 0
+
+
+    for country in countries:
+        color, neighbors = countries[country]
+        value_color_sum = value_color_sum +color
+
+
+    return value_color_sum
 
 def get_config(config, keys, default):
     if not keys: return config
