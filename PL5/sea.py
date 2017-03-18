@@ -9,7 +9,7 @@ __author__ = 'Ernesto Costa'
 __date__ = 'February 2016'
 
 
-from random import random,randint,sample
+from random import random,randint,sample,gauss
 from operator import itemgetter
 
 def run(numb_runs,numb_generations,size_pop,size_cromo,prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors,fitness_func):
@@ -99,6 +99,7 @@ def gera_indiv(size_cromo):
     # random initialization
     # we chose colors from 1 to #countries
     # Todo: test out different initializations (all same color, each color once, random)
+
     indiv = [randint(1,size_cromo) for i in range(size_cromo)]
     #indiv = [randint(1,4) for i in range(size_cromo)]
     return indiv
@@ -120,8 +121,14 @@ def muta_rand_gene(gene, prob_muta, size_cromo):
     if value < prob_muta:
         #Todo: Try out different mutation
 
-        g = randint(1,size_cromo)
+        #g = randint(1,size_cromo)
         #g = randint(1,4)
+        g = gauss(0,3)
+        while(g < 0):
+            g = gauss(0,3)
+        g = round(g)
+        
+    
     return g
 
 # Variation Operators :Crossover
