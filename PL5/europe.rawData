@@ -1,6 +1,6 @@
 Country: PT 	Neighbors: SP
 Country: SP 	Neighbors: PT FR
-Country: FR 	Neighbors: SP BE LU CH IT
+Country: FR 	Neighbors: SP BE LU CH IT DE
 Country: BE 	Neighbors: FR NL LU DE
 Country: LU 	Neighbors: FR BE DE
 Country: CH 	Neighbors: FR IT DE AT LI
