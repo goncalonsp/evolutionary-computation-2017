@@ -1,0 +1,15 @@
+initial solution
+- best goes down (no elitism, because pop is too small)
+- increasing generation does not help because best get lost
+
+increased population
+- improved fitness
+
+increased mutation prob
+- in average maybe bit better but too few experiments
+
+increased crossover prob
+- maybe bit better
+
+decreased crossover prob
+- maybe bit worse
