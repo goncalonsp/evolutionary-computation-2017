@@ -376,16 +376,19 @@ def display_one_run(data,titulo):
     pass
 
 
-def plot_data(file_name, name,body,indiv,loc='best'):
+def plot_data(file_name, name,body,indiv,problem,loc='best'):
     with open(file_name) as f_in:
         f_in = open(file_name)
         # read fitness cases
         data = f_in.readlines()[1:]
         f_in.close()
+
+        fit_cases = get_fit_cases(problem)
+
         # plot
         values_x = [float(line[:-1].split()[0]) for line in data]
         values_y = [float(line[:-1].split()[-1]) for line in data]
-        calculated_values_y = [interpreter(indiv,x) for x in values_x]
+        calculated_values_y = [interpreter(indiv, case[:-1]) for case in fit_cases]
         
         plt.ylabel('Value')
         plt.xlabel('Input Values')
@@ -421,7 +424,7 @@ if __name__ == '__main__':
     
     best,best_indiv,stat,stat_aver = sgp(problem,numb_gen,pop_size,in_max_depth,max_len,prob_mut_node,prob_cross,tour_size, seed)
     #display_stat_1(stat,stat_aver)
-    plot_data(problem,'Symbolic Regression','x**2 + x + 1',best_indiv,'lower right')
+    plot_data(problem,'Symbolic Regression','x**2 + x + 1',best_indiv,problem,'lower right')
     #results = sgp_for_single_plot(problem,numb_gen,pop_size, in_max_depth, max_len,prob_mut_node, prob_cross, tour_size,seed_=False)
     #display_one_run(results,'Symbolic Regression')
     #run_for_plot(numb_runs,'Simbolic Regression',problem,numb_gen,pop_size,in_max_depth,max_len,prob_mut_node,prob_cross,tour_size, seed)
