@@ -46,7 +46,7 @@ if __name__ == '__main__':
 	n_runs = 30
 	generations = 1500
 	pop_size = 100
-	cromo_size = 30
+	cromo_size = 100
 	prob_muta = 0.01 #0.001, 0.05, 0.1
 	prob_cross = 0.70
 	tour_size = 3

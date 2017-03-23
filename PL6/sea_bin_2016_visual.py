@@ -8,6 +8,7 @@ __author__ = 'Ernesto Costa'
 __date__ = 'February 2016'
 
 
+from jb_2016 import viola, phenotype
 from random import random,randint, sample, seed
 from operator import itemgetter
 
@@ -18,15 +19,20 @@ def run(numb_runs,numb_generations,size_pop, size_cromo, prob_mut, prob_cross,se
         best, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
         statistics.append(stat_best)
         write_run(best)
-        print('Percentagem: ' + str( (i*100) / numb_runs) )
+        print('Percentagem: ' + str( ((i+1)*100) / numb_runs) )
     stat_gener = list(zip(*statistics))
     boa = [max(g_i) for g_i in stat_gener] # minimization
     aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
     return boa,aver_gener
 
 def write_run (indiv):
+    num_viola = viola(phenotype(indiv[0]), len(indiv[0]))
     f = open('jb_runs.out', 'a+')
-    f.write(str(indiv[1]) + '\n')
+    f.write('Fitness: ' + str(indiv[1]) + '\n')
+    f.close()
+
+    f = open('jb_runs_detailed.out', 'a+')
+    f.write('Fitness: ' + str(indiv[1]) + '. Nº Elements: ' + str(sum(indiv[0])) + ' Nº Violations: ' + str(num_viola) + '\n')
     f.close()
 
 # Simple [Binary] Evolutionary Algorithm		

@@ -28,6 +28,10 @@ def run(numb_runs,numb_generations,size_pop, max_cromo_size, prob_mut, prob_cros
 def write_run (indiv):
     num_viola = viola(phenotype(indiv[0]), len(indiv[0]))
     f = open('jb_runs.out', 'a+')
+    f.write('Fitness: ' + str(indiv[1]) + '\n')
+    f.close()
+
+    f = open('jb_runs_detailed.out', 'a+')
     f.write('Fitness: ' + str(indiv[1]) + '. Nº Elements: ' + str(len(indiv[0])) + ' Nº Violations: ' + str(num_viola) + '\n')
     f.close()
 
