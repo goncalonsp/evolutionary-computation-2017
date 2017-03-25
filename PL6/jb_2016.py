@@ -94,4 +94,4 @@ if __name__ == '__main__':
             save_stat_n(boa, stat_average_oa, file_name)
 
     else:
-        print("Try with flag -h")
+        parser.print_help()
