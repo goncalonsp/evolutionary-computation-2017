@@ -61,7 +61,7 @@ if __name__ == '__main__':
     #print("Test of equal variance: ")
     #print(levene(data2))
 
-    histogram(data1, 'Binary Representation','Fitness','Count' )
+    histogram(data1, 'Binary Representation', 'Fitness', 'Count' , bins=10)
     histogram_norm(data1, 'Binary Representation','Fitness','Count' )
 
     histogram(data2, 'Integer Representation','Fitness','Count' )
