@@ -4,6 +4,7 @@ Sebastian Rehfeldt, April 2017
 """
 import os
 import numpy
+import tsp
 
 def createDistMat(coordinates):
     distmat = numpy.zeros(shape=(len(coordinates),len(coordinates)))
@@ -60,19 +61,22 @@ def readFile(file):
         distmat = createDistMat(coordinates)
 
         #read items (index, profit, weight, assigned node number)
-        line = file_in.readline()
         #each city stores tuples of items having a profit and weight
         items = {}
 
         lines = file_in.readlines()
         for line in lines:
             n,p,w,node = line.split()
+            #coordinates cities and distmat start to count at 0
+            #datafile starts to count at 1
+            #subtract 1 to match cities in items and coordinates
+            node = str(int(node)-1)
             if hasattr(items, node):
                 items[node].append((float(p),float(w)))
             else:
                 items[node] = [(float(p),float(w))]
 
-    return coordinates, distmat, items
+    return coordinates, distmat, items, problem_parameters
 
 
 
@@ -82,6 +86,6 @@ if __name__ == '__main__':
     filename = "a280_n279_bounded-strongly-corr_01.ttp"
     filepath = folder + "/instances/" + filename
 
-    coordinates, distmat, items = readFile(filepath)
+    coordinates, distmat, items, params = readFile(filepath)
 
-  
+    tour, length = tsp.getTour(coordinates,distmat) #tour does not include starting and ending cities with index 0
