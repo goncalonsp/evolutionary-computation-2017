@@ -35,7 +35,9 @@ def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_p
         # New population
         population = sel_survivors(population,descendants)
         # Evaluate the new population
-        population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]     
+        population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]   
+
+    #TODO maybe return top k distinct tours  
     return best_pop(population)
 
 

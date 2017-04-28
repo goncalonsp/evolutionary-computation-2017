@@ -5,6 +5,7 @@ Sebastian Rehfeldt, April 2017
 import os
 import numpy
 import tsp
+import kp
 
 def createDistMat(coordinates):
     distmat = numpy.zeros(shape=(len(coordinates),len(coordinates)))
@@ -78,7 +79,8 @@ def readFile(file):
 
     return coordinates, distmat, items, problem_parameters
 
-
+def calculateObjectiveValue(tour,plan,distmat,params):
+    return 0
 
 if __name__ == '__main__':
 
@@ -87,5 +89,24 @@ if __name__ == '__main__':
     filepath = folder + "/instances/" + filename
 
     coordinates, distmat, items, params = readFile(filepath)
+    #TODO: multiple runs of the algorithm for allowing a statistical analysis
+
+    #TODO think about a way to combine both approaches instead of solving in sequential order
+    #maybe: after running kp - start over with tsp and find a good tour for that packing plan and continue with KP then and start to loop (not a super smart idea and super slow, but I didnt find a good solution yet)
 
     tour, length = tsp.getTour(coordinates,distmat) #tour does not include starting and ending cities with index 0
+    print("===================TOUR==============")
+    print(tour)
+    print("\n\n===================LENGTH==============")
+    print(length)
+
+    #TODO run for top k distinct tours and select the best
+    #plan is a dict where the key is the city id and the value an array of tuples (profit,weight)
+    plan = kp.getPackingPlan(items, tour, distmat, params)
+    print("\n\n===================Plan==============")
+    print(plan)
+
+    #TODO implement TTP Model 1 for that
+    objectiveValue = calculateObjectiveValue(tour,plan,distmat,params)
+    print("\n\n===================Objective==============")
+    print(objectiveValue)

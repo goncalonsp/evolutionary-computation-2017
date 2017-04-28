@@ -24,7 +24,8 @@ def phenotype(genotype):
     #then original positions of these values form permutation
 
     sorted_geno = sorted(genotype,reverse=True)
-    #TODO find a smarter way for that
+    #TODO find a more performant way for that
+    #TODO maybe also consider distance to previous city for the interpretation phase (selection of order)
     genoTemp = deepcopy(genotype)
     pheno = []
     for val in sorted_geno:
@@ -38,6 +39,8 @@ def phenotype(genotype):
 def evaluate(tour,distmat):
     number_of_cities = len(tour)
     distance = distmat[0,tour[0]] #distance from fixed starting point to first city of tour
+    #TODO consider also where items are available
+    #cities with high valued and heavy items should be in the end of the tour
     for i in range(number_of_cities-1):
         j = (i + 1) % number_of_cities
         distance += distmat[tour[i], tour[j]]
@@ -47,7 +50,9 @@ def evaluate(tour,distmat):
 
 
 def getTour(coordinates,distmat):
-    
+    #TODO plot results to estimate needed #generations
+    #TODO run multiple times to find good parameters
+
     my_fitness = fitness(distmat)
     size_cromo = len(coordinates)-1 # as the starting and ending point is fixed
     
@@ -57,19 +62,19 @@ def getTour(coordinates,distmat):
     #should be 0,2,1,3,0 and dist should be 109.68....
 
     #parameters follow Golomb Ruler paper EC8 from theoretical work
-    generations = 100
-    population = 100
+    generations = 10
+    population = 10
     prob_muta = 0.25
     prob_cross = 0.75
     sigma = 0.1
 
     best = sea(generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(5),two_points_cross,muta_float_gaussian,sel_survivors_elite(0.1), my_fitness)
     pheno = phenotype(best[0])
-    print(pheno)
+    #print(pheno)
     #print(min(pheno)) #should be 1
     #print(max(pheno)) #should be length -1
     #print(len(set(pheno))) #should be as the one above
-    print(best[1]) #should be low
+    #print(best[1]) #should be low
 
     return pheno, best[1]
     
