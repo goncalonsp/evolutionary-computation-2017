@@ -36,7 +36,7 @@ def getPackingPlan(items, tour, distmat, params):
 	#items will be an array which contains dictionarys (city id, profit, weight, score, fitness)
 	#uses simple heuristic from paper "A comprehensive benchmark..."
 	scoredItems = numpy.empty(n_items, dtype=object)
-	i = 0
+	j = 0
 	for i in range(len(tour)):
 		city = tour[i]
 		dist = distanceToFinish[i]
@@ -50,7 +50,7 @@ def getPackingPlan(items, tour, distmat, params):
 			score = p - renting_rate*travelTime
 			fitness = renting_rate*dist/max_speed + score
 
-			scoredItems[i] = {
+			scoredItems[j] = {
 				"city_id": city,
 				"profit" : p,
 				"weight" : w,
@@ -58,7 +58,7 @@ def getPackingPlan(items, tour, distmat, params):
 				"fitness": fitness
 			}
 
-			i+=1
+			j+=1
 
 	#sort items according to
 	scoredItems = sorted(scoredItems, key=lambda a: a["score"],reverse=True)
@@ -70,7 +70,8 @@ def getPackingPlan(items, tour, distmat, params):
 
 		if (cur_capacity+item["weight"]<capacity) and (item["fitness"]>0):
 
-			if hasattr(packedItems, city):
+			keys = list(packedItems.keys())
+			if city in keys:
 				packedItems[city].append((item["profit"],item["weight"]))
 			else:
 				packedItems[city] = [(item["profit"],item["weight"])]
