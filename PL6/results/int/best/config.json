@@ -1,0 +1,15 @@
+{
+	"mutation": {
+		"probability": 0.01,
+		"function": "muta_int_add"
+	},
+    "crossover": {
+    	"probability": 0.7,
+    	"function": "max_size_cross"
+    },
+    "tournament_size": 3,
+    "elite_percentage": 0.1,
+    "number_generations": 1500,
+    "size_population": 100,
+    "maximum_chromosome_size": 100
+}
