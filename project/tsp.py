@@ -6,7 +6,6 @@ Based on Ernesto Costa, February 2017
 
 from sea_tsp import *
 from utils import *
-from math import sqrt
 from copy import deepcopy
 
 # fitness
@@ -62,8 +61,8 @@ def getTour(coordinates,distmat):
     #should be 0,2,1,3,0 and dist should be 109.68....
 
     #parameters follow Golomb Ruler paper EC8 from theoretical work
-    generations = 100
-    population = 200
+    generations = 10
+    population = 20
     prob_muta = 0.25
     prob_cross = 0.75
     sigma = 0.1
