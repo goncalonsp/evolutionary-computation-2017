@@ -11,12 +11,44 @@ from operator import itemgetter
 import config
 
 
-# Simple Evolutionary Algorithm		
+# Simple Evolutionary Algorithm     
 def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
     # inicialize population: indiv = (cromo,fit)
     population = gera_pop(size_pop,size_cromo)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
+    for i in range(numb_generations):
+        # sparents selection
+        mate_pool = sel_parents(population)
+    # Variation
+    # ------ Crossover
+        parents = []
+        for i in  range(0,size_pop-1,2):
+            indiv_1= mate_pool[i]
+            indiv_2 = mate_pool[i+1]
+            children = recombination(indiv_1,indiv_2, prob_cross)
+            parents.extend(children) 
+        # ------ Mutation
+        descendants = []
+        for cromo,fit in parents:
+            new_indiv = mutation(cromo,prob_mut,sigma)
+            descendants.append((new_indiv,fitness_func(new_indiv)))
+        # New population
+        population = sel_survivors(population,descendants)
+        # Evaluate the new population
+        population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]   
+
+    return top_k_tours(population,config.top_k)
+    
+def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
+    # inicialize population: indiv = (cromo,fit)
+    population = gera_pop(size_pop,size_cromo)
+    # evaluate population
+    population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
+
+    stat = [best_pop(population)[1]]
+    stat_aver = [average_pop(population)]
+
     for i in range(numb_generations):
         # sparents selection
         mate_pool = sel_parents(population)
@@ -38,7 +70,10 @@ def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_p
         # Evaluate the new population
         population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]   
 
-    return top_k_tours(population,config.top_k)
+        stat.append(best_pop(population)[1])
+        stat_aver.append(average_pop(population))
+
+    return best_pop(population),stat, stat_aver
 
 
 # Initialize population
@@ -165,6 +200,9 @@ def sel_survivors_elite(elite):
 def best_pop(population):
     population.sort(key=itemgetter(1),reverse=False)
     return population[0]
+
+def average_pop(population):
+    return sum([fit for cromo,fit in population])/len(population)
 
 def top_k_tours(population,k):
     population.sort(key=itemgetter(1),reverse=False)

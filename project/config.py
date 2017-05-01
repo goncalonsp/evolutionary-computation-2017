@@ -1,13 +1,13 @@
 """			General config 			"""
 use_linkern = False
-top_k = 10
+top_k = 1
 
 
 
 """			TSP config 			"""
+tsp_development = True #will plot a curve over generations or run multiple times
 tsp_fitness = "distance"
 tsp_interpretation = "simple"
-tsp_development = False
 generations =	100 #10000
 population =  	20 # 200
 prob_muta = 	0.25

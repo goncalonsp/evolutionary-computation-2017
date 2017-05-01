@@ -70,16 +70,19 @@ def getTours(coordinates,distmat):
     tour_size = config.tour_size
     elite_size = config.elite_size
 
+    bestTours = []
+
     if(config.tsp_development):
-        pass
-        #TODO plot results to estimate needed #generations
+        best, stat, stat_average = sea_for_plot(generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
+        display_stat_1(stat,stat_average)
+        bestTours.append((phenotype(best[0]),best[1]))
         #TODO run multiple times to find good parameters
     else:
         tours, fitnessValues = sea(generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
+        
+        for i in range(len(tours)):
+            bestTours.append((phenotype(tours[i]),fitnessValues[i]))
 
-    bestTours = []
-    for i in range(len(tours)):
-        bestTours.append((phenotype(tours[i]),fitnessValues[i]))
-
+    print(bestTours)
     return bestTours
     
