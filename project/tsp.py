@@ -17,11 +17,15 @@ def fitness(distmat):
 
 def phenotype(genotype):
     """ Return the phenotype which is the tour."""
-    #phenotype is a permutation of integers higher than 1 where each integer represents a city
-    #the values are higher than 0 as the first city is fixed to the first city with index 0
-    #it interprets the random key representation
-    #first values are sorted in decending order
-    #then original positions of these values form permutation
+    # phenotype is a permutation of integers higher than 1 where each integer represents a city
+    # the values are higher than 0 as the first city is fixed to the first city with index 0
+    #   for example [0, 1, 4, 6, 2, 3, 5, 7, 9, 8] 
+    #
+    # this function interprets a random key representation
+    # the genotype will be a list of values in range [0,1]
+    #
+    # first values are sorted in descending order
+    # then original positions of these values form permutation
 
     sorted_geno = sorted(genotype,reverse=True)
     #TODO find a more performant way for that
@@ -49,12 +53,12 @@ def evaluate(tour,distmat):
     return distance
 
 
-def getTour(coordinates,distmat):
+def getTour(distmat):
     #TODO plot results to estimate needed #generations
     #TODO run multiple times to find good parameters
 
     my_fitness = fitness(distmat)
-    size_cromo = len(coordinates)-1 # as the starting and ending point is fixed
+    size_cromo = distmat.shape[0]-1 # as the starting and ending point is fixed
     
     #geno = [0.4,0.7,0.4]
     #print(phenotype(geno))
