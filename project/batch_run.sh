@@ -1,0 +1,12 @@
+#!/bin/bash
+$PROGRAM_CMD=$PROGRAM_CMD3
+PROGRAM=ttp\.py
+CONFIG_FILE=config.json
+LOCATION=instances
+
+$PROGRAM_CMD $PROGRAM $LOCATION/a280_n279_bounded-strongly-corr_01.ttp -c $CONFIG_FILE
+$PROGRAM_CMD $PROGRAM $LOCATION/a280_n1395_uncorr-similar-weights_05.ttp -c $CONFIG_FILE
+$PROGRAM_CMD $PROGRAM $LOCATION/a280_n2790_uncorr_10.ttp -c $CONFIG_FILE
+$PROGRAM_CMD $PROGRAM $LOCATION/fnl4461_n4460_bounded-strongly-corr_01.ttp -c $CONFIG_FILE
+$PROGRAM_CMD $PROGRAM $LOCATION/fnl4461_n22300_uncorr-similar-weights_05.ttp -c $CONFIG_FILE
+$PROGRAM_CMD $PROGRAM $LOCATION/fnl4461_n44600_uncorr_10.ttp -c $CONFIG_FILE
