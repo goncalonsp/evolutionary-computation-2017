@@ -55,7 +55,7 @@ def evaluate(tour,distmat):
         return distance
 
 
-def getTour(distmat):
+def getTours(distmat):
 
     my_fitness = fitness(distmat)
     size_cromo = distmat.shape[0]-1 # as the starting and ending point is fixed

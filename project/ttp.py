@@ -77,15 +77,22 @@ if __name__ == '__main__':
         )
 
     parser.add_argument(
-        'INPUT', type=str,
+        '-INPUT', type=str,
         help='ttp file to be read.')
 
+    parser.add_argument(
+        '-c', '--config', type=open,
+        help='Configurations file. If not provided defaults will be used!')
+
     args = parser.parse_args()
+
+    # Load configuration file
+    configs = config.read_config(args.config)
 
     #TODO verify the solution on toy example from paper "The travelling thief problem: the first ..."
 
     # Read the file
-    distmat, items, params = readFile(args.INPUT)
+    #distmat, items, params = readFile(args.INPUT)
 
 
 
