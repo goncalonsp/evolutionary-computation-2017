@@ -3,10 +3,29 @@ ttp_2017.py
 Sebastian Rehfeldt, April 2017
 """
 import os
-import tsp
-import kp
 from read_ttp_file import readFile
 from argparse import ArgumentParser
+import math
+import tsp
+import kp
+import config
+
+
+def readTour(file):
+    tour = []
+    length = 0
+    with  open(file) as file_in:
+        amounts = file_in.readline()
+        firstLine = file_in.readline() #contains tour part which is not needed
+
+        lines = file_in.readlines()
+        for line in lines:
+            start, end, dist = line.split()
+            tour.append(int(start))
+            length += int(dist)
+
+    return tour, length
+
 
 def calculateObjectiveValue(tour,plan,distmat,params):
 
@@ -59,21 +78,7 @@ if __name__ == '__main__':
 
     parser.add_argument(
         'INPUT', type=str,
-        help='ttp file to be read.')   
-    # use one of the following files:
-    # "a280_n279_bounded-strongly-corr_01.ttp"
-    # "a280_n1395_uncorr-similar-weights_05.ttp"
-    # "a280_n2790_uncorr_10.ttp"
-    #
-    # each of these bellow will take 151.8 MB for the distmat array
-    # "fnl4461_n4460_bounded-strongly-corr_01.ttp"
-    # "fnl4461_n22300_uncorr-similar-weights_05.ttp"
-    # "fnl4461_n44600_uncorr_10.ttp"
-
-    # these files cant be used because the distmat array would be too big :-D, about 8.5 GB big
-    # "pla33810_n33809_bounded-strongly-corr_01.ttp"
-    # "pla33810_n169045_uncorr-similar-weights_05.ttp"
-    # "pla33810_n338090_uncorr_10.ttp"
+        help='ttp file to be read.')
 
     args = parser.parse_args()
 
@@ -81,29 +86,77 @@ if __name__ == '__main__':
 
     # Read the file
     distmat, items, params = readFile(args.INPUT)
-    print("done reading")
-    #TODO: multiple runs of the algorithm for allowing a statistical analysis
 
-    #TODO think about a way to combine both approaches instead of solving in sequential order
-    #maybe: after running kp - start over with tsp and find a good tour for that packing plan and continue with KP then and start to loop (not a super smart idea and super slow, but I didn't find a good solution yet)
 
-    #TODO try to use linkern.tour instead
-    tour, length = tsp.getTour(distmat) #tour does not include starting and ending cities with index 0
-    print("===================TOUR==============")
-    print(tour)
-    print("\n\n===================LENGTH==============")
-    print(length)
 
-    #TODO run for top k distinct tours and select the best
-    #plan is a dict where the key is the city id and the value an array of tuples (profit,weight)
-    plan = kp.getPackingPlan(items, tour, distmat, params)
-    print("\n\n===================Plan==============")
-    print(plan)
+    files = config.files
 
-    profit, time, objective = calculateObjectiveValue(tour,plan,distmat,params)
+    folder = os.path.dirname(os.path.realpath(__file__)) 
+    
+    for file in files:
 
-    print("\n\n===================Objective==============")
-    print("Profit   : "+str(profit))
-    print("Time     : "+str(time))
-    print("Rent     : "+str(params["renting_rate"]))
-    print("Objective: "+str(objective))
+        filepath = folder + "/instances/" + file["name"]
+        tourpath = folder + "/instances/" + file["tour"]
+        print("===================Instance==============")
+        print(file["name"])
+
+        distmat, items, params = readFile(filepath)
+
+        if(config.use_linkern):
+            tour, length = readTour(tourpath)
+            plan = kp.getPackingPlan(items, tour, distmat, params)
+            profit, time, objective = calculateObjectiveValue(tour,plan,distmat,params)
+        else:
+            #TODO think about a way to combine both approaches instead of solving in sequential order (real future work)
+            #maybe: after running kp - start over with tsp and find a good tour for that packing plan and continue with KP then and start to loop (not a super smart idea and super slow, but I didnt find a good solution yet)
+
+            #return top k distinct tours as longer tours could be better for the whole problem (k in config)
+            tours = tsp.getTours(distmat) #tour does not include starting and ending cities with index 0
+            #set shortest tour as initial tour
+            tour = tours[0][0]
+            length = tours[0][1]
+
+            #create plans for each tour
+            #plan is a dict where the key is the city id and the value an array of tuples (profit,weight)
+            plan = {}
+            profit = 0
+            time = 0
+            objective = - math.inf
+
+            for i in range(len(tours)):
+                cur_tour = tours[i][0]
+                cur_length = tours[i][1]
+                cur_plan = kp.getPackingPlan(items, cur_tour, distmat, params)
+                p, t, o = calculateObjectiveValue(cur_tour,cur_plan,distmat,params)
+                #print("========")
+                #print(cur_length)
+                #print(o)
+
+                #update everything if new tour with plan is better
+                if o>objective:
+                    if(objective > - math.inf):
+                        print("A longer tour was better")
+                    tour = cur_tour
+                    length = cur_length
+                    plan = cur_plan
+                    profit = p
+                    time = t
+                    objective = o
+
+        """             OUTPUT             """
+        if(len(files)<3):
+            print("\n\n===================TOUR==============")
+            print(tour)
+        
+            if(config.tsp_fitness == "simple"):
+                print("\n\n===================LENGTH==============")
+                print(length) #linkern length is around 2613 (using MATLAB code for a280)
+
+            print("\n\n===================Plan==============")
+            print(plan)
+
+        print("\n\n===================Objective==============")
+        print("Profit   : "+str(profit))
+        print("Time     : "+str(time))
+        print("Rent     : "+str(params["renting_rate"]))
+        print("Objective: "+str(objective))

@@ -19,12 +19,12 @@ def display_stat_1(best,average):
     plt.legend(loc='best')
     plt.show()
     
-def display_stat_n(boa,average_best):
-    generations = list(range(len(boa)))
+def display_stat_n(best,average_best):
+    generations = list(range(len(best)))
     plt.title('Performance over runs')
     plt.xlabel('Generation')
     plt.ylabel('Fitness')
-    plt.plot(generations, boa, label='Best of All')
+    plt.plot(generations, best, label='Best of All')
     plt.plot(generations,average_best,label='Average of Bests')
     plt.legend(loc='best')
     plt.show()
