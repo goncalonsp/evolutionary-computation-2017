@@ -39,7 +39,7 @@ def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_p
         population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]   
 
     return top_k_tours(population,config.top_k)
-    
+
 def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
     # inicialize population: indiv = (cromo,fit)
     population = gera_pop(size_pop,size_cromo)
@@ -75,6 +75,18 @@ def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cr
 
     return best_pop(population),stat, stat_aver
 
+def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
+    statistics = []
+    bestTours = []
+    for i in range(numb_runs):
+        best,stat_best,stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
+        bestTours.append(best)
+        statistics.append(stat_best)
+    stat_gener = list(zip(*statistics))
+    best = [min(g_i) for g_i in stat_gener] # minimization
+    aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
+    return best,aver_gener,bestTours
+    
 
 # Initialize population
 def gera_pop(size_pop,size_cromo):

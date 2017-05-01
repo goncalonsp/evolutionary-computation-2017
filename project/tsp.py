@@ -74,15 +74,20 @@ def getTours(coordinates,distmat):
 
     if(config.tsp_development):
         best, stat, stat_average = sea_for_plot(generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
-        display_stat_1(stat,stat_average)
-        bestTours.append((phenotype(best[0]),best[1]))
-        #TODO run multiple times to find good parameters
+        if(config.tsp_plot_generations):
+            display_stat_1(stat,stat_average)
+            bestTours.append((phenotype(best[0]),best[1]))
+        else:
+            best, best_average, tours = run(config.tsp_runs,generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
+            display_stat_n(best,best_average)
+            #append first best tour to bestTours to allow rest of program to run
+            bestTours.append((phenotype(tours[0][0]),tours[0][1]))
+        
     else:
         tours, fitnessValues = sea(generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
         
         for i in range(len(tours)):
             bestTours.append((phenotype(tours[i]),fitnessValues[i]))
 
-    print(bestTours)
     return bestTours
     

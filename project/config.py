@@ -1,11 +1,13 @@
 """			General config 			"""
 use_linkern = False
-top_k = 1
+top_k = 5
 
 
 
 """			TSP config 			"""
-tsp_development = True #will plot a curve over generations or run multiple times
+tsp_development = False #set true to analyze EA algorithm for TSP
+tsp_plot_generations = True #plots evolution of best and average over generations if true, otherwise it will print best and average best over different runs
+tsp_runs = 5
 tsp_fitness = "distance"
 tsp_interpretation = "simple"
 generations =	100 #10000

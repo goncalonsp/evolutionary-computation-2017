@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
         filepath = folder + "/instances/" + file["name"]
         tourpath = folder + "/instances/" + file["tour"]
-        print("\n\n\n\n===================Instance==============")
+        print("===================Instance==============")
         print(file["name"])
 
         coordinates, distmat, items, params = readFile(filepath)
@@ -188,7 +188,8 @@ if __name__ == '__main__':
 
                 #update everything if new tour with plan is better
                 if o>objective:
-                    print("A longer tour was better")
+                    if(objective > - math.inf):
+                        print("A longer tour was better")
                     tour = cur_tour
                     length = cur_length
                     plan = cur_plan
