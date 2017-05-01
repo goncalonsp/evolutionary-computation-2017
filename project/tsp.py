@@ -7,6 +7,7 @@ Based on Ernesto Costa, February 2017
 from sea_tsp import *
 from utils import *
 from copy import deepcopy
+import config
 
 # fitness
 def fitness(distmat):
@@ -22,17 +23,18 @@ def phenotype(genotype):
     #first values are sorted in decending order
     #then original positions of these values form permutation
 
-    sorted_geno = sorted(genotype,reverse=True)
-    #TODO find a more performant way for that
-    #TODO maybe also consider distance to previous city for the interpretation phase (selection of order)
-    genoTemp = deepcopy(genotype)
-    pheno = []
-    for val in sorted_geno:
-        index = genoTemp.index(val)
-        pheno.append(index+1)
+    if config.tsp_interpretation == "simple":
+        sorted_geno = sorted(genotype,reverse=True)
+        #TODO find a more performant way for that
+        #TODO maybe also consider distance to previous city for the interpretation phase (selection of order)
+        genoTemp = deepcopy(genotype)
+        pheno = []
+        for val in sorted_geno:
+            index = genoTemp.index(val)
+            pheno.append(index+1)
 
-        genoTemp[index] = 2 #this is necessary in the case that random values are duplicated
-    return pheno
+            genoTemp[index] = 2 #this is necessary in the case that random values are duplicated
+        return pheno
 
 
 def evaluate(tour,distmat):
@@ -45,12 +47,11 @@ def evaluate(tour,distmat):
         distance += distmat[tour[i], tour[j]]
     distance += distmat[0,tour[number_of_cities-1]]
 
-    return distance
+    if config.tsp_fitness == "distance":
+        return distance
 
 
-def getTour(coordinates,distmat):
-    #TODO plot results to estimate needed #generations
-    #TODO run multiple times to find good parameters
+def getTours(coordinates,distmat):
 
     my_fitness = fitness(distmat)
     size_cromo = len(coordinates)-1 # as the starting and ending point is fixed
@@ -61,19 +62,24 @@ def getTour(coordinates,distmat):
     #should be 0,2,1,3,0 and dist should be 109.68....
 
     #parameters follow Golomb Ruler paper EC8 from theoretical work
-    generations = 10
-    population = 20
-    prob_muta = 0.25
-    prob_cross = 0.75
-    sigma = 0.1
+    generations = config.generations
+    population = config.population
+    prob_muta = config.prob_muta
+    prob_cross = config.prob_cross
+    sigma = config.sigma
+    tour_size = config.tour_size
+    elite_size = config.elite_size
 
-    best = sea(generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(5),two_points_cross,muta_float_gaussian,sel_survivors_elite(0.1), my_fitness)
-    pheno = phenotype(best[0])
-    #print(pheno)
-    #print(min(pheno)) #should be 1
-    #print(max(pheno)) #should be length -1
-    #print(len(set(pheno))) #should be as the one above
-    #print(best[1]) #should be low
+    if(config.tsp_development):
+        pass
+        #TODO plot results to estimate needed #generations
+        #TODO run multiple times to find good parameters
+    else:
+        tours, fitnessValues = sea(generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
 
-    return pheno, best[1]
+    bestTours = []
+    for i in range(len(tours)):
+        bestTours.append((phenotype(tours[i]),fitnessValues[i]))
+
+    return bestTours
     

@@ -1,5 +1,24 @@
-use_linkern = True
+"""			General config 			"""
+use_linkern = False
+top_k = 10
 
+
+
+"""			TSP config 			"""
+tsp_fitness = "distance"
+tsp_interpretation = "simple"
+tsp_development = False
+generations =	100 #10000
+population =  	20 # 200
+prob_muta = 	0.25
+prob_cross = 	0.75
+sigma = 		0.1
+tour_size = 	5
+elite_size = 	0.1
+
+
+
+"""			File selection 			"""
 """
 files = [{
 			"name": "a280_n279_bounded-strongly-corr_01.ttp",
@@ -22,7 +41,10 @@ files = [{
 		}]
 """
 
+#"""
 files = [{
 			"name": "a280_n279_bounded-strongly-corr_01.ttp",
 			"tour": "a280.linkern.tour"
 		}]
+#"""		
+

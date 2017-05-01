@@ -6,6 +6,7 @@ import numpy
 
 def getPackingPlan(items, tour, distmat, params):
 	#TODO implement EA algorithm later
+	#TODO maybe improve heuristic or use it for basis of EA
 
 	capacity = params["kp_capacity"]
 	min_speed = params["min_speed"]

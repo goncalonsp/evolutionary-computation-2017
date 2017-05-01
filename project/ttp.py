@@ -4,6 +4,7 @@ Sebastian Rehfeldt, April 2017
 """
 import os
 import numpy
+import math
 import tsp
 import kp
 import config
@@ -141,8 +142,6 @@ def calculateObjectiveValue(tour,plan,distmat,params):
     return profit, time, objective
 
 if __name__ == '__main__':
-    #TODO verify the solution on toy example from paper "The travelling thief problem: the first ..."
-    #TODO get clear about edge-weight-type CEIL_2D (probably we need to round up each dist)
 
     files = config.files
 
@@ -153,35 +152,61 @@ if __name__ == '__main__':
         filepath = folder + "/instances/" + file["name"]
         tourpath = folder + "/instances/" + file["tour"]
         print("\n\n\n\n===================Instance==============")
-        print("File")
+        print(file["name"])
 
         coordinates, distmat, items, params = readFile(filepath)
-        #TODO: multiple runs of the algorithm for allowing a statistical analysis
-
-        #TODO think about a way to combine both approaches instead of solving in sequential order 
-        #maybe: after running kp - start over with tsp and find a good tour for that packing plan and continue with KP then and start to loop (not a super smart idea and super slow, but I didnt find a good solution yet)
 
         if(config.use_linkern):
             tour, length = readTour(tourpath)
+            plan = kp.getPackingPlan(items, tour, distmat, params)
+            profit, time, objective = calculateObjectiveValue(tour,plan,distmat,params)
         else:
-            tour, length = tsp.getTour(coordinates,distmat) #tour does not include starting and ending cities with index 0
-        
-        
+            #TODO think about a way to combine both approaches instead of solving in sequential order (real future work)
+            #maybe: after running kp - start over with tsp and find a good tour for that packing plan and continue with KP then and start to loop (not a super smart idea and super slow, but I didnt find a good solution yet)
+
+            #return top k distinct tours as longer tours could be better for the whole problem (k in config)
+            tours = tsp.getTours(coordinates,distmat) #tour does not include starting and ending cities with index 0
+            #set shortest tour as initial tour
+            tour = tours[0][0]
+            length = tours[0][1]
+
+            #create plans for each tour
+            #plan is a dict where the key is the city id and the value an array of tuples (profit,weight)
+            plan = {}
+            profit = 0
+            time = 0
+            objective = - math.inf
+
+            for i in range(len(tours)):
+                cur_tour = tours[i][0]
+                cur_length = tours[i][1]
+                cur_plan = kp.getPackingPlan(items, cur_tour, distmat, params)
+                p, t, o = calculateObjectiveValue(cur_tour,cur_plan,distmat,params)
+                #print("========")
+                #print(cur_length)
+                #print(o)
+
+                #update everything if new tour with plan is better
+                if o>objective:
+                    print("A longer tour was better")
+                    tour = cur_tour
+                    length = cur_length
+                    plan = cur_plan
+                    profit = p
+                    time = t
+                    objective = o
+
+        """             OUTPUT             """
         if(len(files)<3):
             print("\n\n===================TOUR==============")
             print(tour)
         
-        print("\n\n===================LENGTH==============")
-        print(length) #linkern length is around 2613 (using MATLAB code for a280)
+            if(config.tsp_fitness == "simple"):
+                print("\n\n===================LENGTH==============")
+                print(length) #linkern length is around 2613 (using MATLAB code for a280)
 
-        #TODO run for top k distinct tours and select the best
-        #plan is a dict where the key is the city id and the value an array of tuples (profit,weight)
-        plan = kp.getPackingPlan(items, tour, distmat, params)
-        if(len(files)<3):
             print("\n\n===================Plan==============")
             print(plan)
-
-        profit, time, objective = calculateObjectiveValue(tour,plan,distmat,params)
 
         print("\n\n===================Objective==============")
         print("Profit   : "+str(profit))

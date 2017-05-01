@@ -8,6 +8,7 @@ Adjusted by Sebastian Rehfeldt
 
 from random import random,randint, sample, gauss
 from operator import itemgetter
+import config
 
 
 # Simple Evolutionary Algorithm		
@@ -37,8 +38,7 @@ def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_p
         # Evaluate the new population
         population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]   
 
-    #TODO maybe return top k distinct tours  
-    return best_pop(population)
+    return top_k_tours(population,config.top_k)
 
 
 # Initialize population
@@ -161,9 +161,25 @@ def sel_survivors_elite(elite):
 
 
 # Auxiliary
-def display(indiv, phenotype):
-    print('Chromo: %s\nFitness: %s' % (phenotype(indiv[0]),indiv[1]))
     
 def best_pop(population):
     population.sort(key=itemgetter(1),reverse=False)
     return population[0]
+
+def top_k_tours(population,k):
+    population.sort(key=itemgetter(1),reverse=False)
+
+    tours = []
+    fitnessValues = []
+    
+    i = 0
+    while len(tours)<k and i<len(population):
+        #add to tours if this tour is not already in best tours
+        pop = population[i][0]
+        if(not pop in tours):
+            tours.append(pop)
+            fitnessValues.append(population[i][1])
+
+        i += 1
+
+    return tours, fitnessValues
