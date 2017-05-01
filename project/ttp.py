@@ -77,7 +77,7 @@ if __name__ == '__main__':
         )
 
     parser.add_argument(
-        '-INPUT', type=str,
+        'INPUT', type=str,
         help='ttp file to be read.')
 
     parser.add_argument(
@@ -91,79 +91,68 @@ if __name__ == '__main__':
 
     #TODO verify the solution on toy example from paper "The travelling thief problem: the first ..."
 
-    # Read the file
-    #distmat, items, params = readFile(args.INPUT)
-
-
-
-    files = config.files
-
-    folder = os.path.dirname(os.path.realpath(__file__)) 
+    folder = os.path.dirname(os.path.realpath(__file__))
+    tourpath = folder + "/instances/" + config.file["tour"]
     
-    for file in files:
+    # Read the file
+    print("===================Instance==============")
+    print(args.INPUT)
+    distmat, items, params = readFile(args.INPUT)
 
-        filepath = folder + "/instances/" + file["name"]
-        tourpath = folder + "/instances/" + file["tour"]
-        print("===================Instance==============")
-        print(file["name"])
+    if(config.use_linkern):
+        tour, length = readTour(tourpath)
+        plan = kp.getPackingPlan(items, tour, distmat, params)
+        profit, time, objective = calculateObjectiveValue(tour,plan,distmat,params)
+    else:
+        #TODO think about a way to combine both approaches instead of solving in sequential order (real future work)
+        #maybe: after running kp - start over with tsp and find a good tour for that packing plan and continue with KP then and start to loop (not a super smart idea and super slow, but I didnt find a good solution yet)
 
-        distmat, items, params = readFile(filepath)
+        #return top k distinct tours as longer tours could be better for the whole problem (k in config)
+        tours = tsp.getTours(distmat) #tour does not include starting and ending cities with index 0
+        #set shortest tour as initial tour
+        tour = tours[0][0]
+        length = tours[0][1]
 
-        if(config.use_linkern):
-            tour, length = readTour(tourpath)
-            plan = kp.getPackingPlan(items, tour, distmat, params)
-            profit, time, objective = calculateObjectiveValue(tour,plan,distmat,params)
-        else:
-            #TODO think about a way to combine both approaches instead of solving in sequential order (real future work)
-            #maybe: after running kp - start over with tsp and find a good tour for that packing plan and continue with KP then and start to loop (not a super smart idea and super slow, but I didnt find a good solution yet)
+        #create plans for each tour
+        #plan is a dict where the key is the city id and the value an array of tuples (profit,weight)
+        plan = {}
+        profit = 0
+        time = 0
+        objective = - math.inf
 
-            #return top k distinct tours as longer tours could be better for the whole problem (k in config)
-            tours = tsp.getTours(distmat) #tour does not include starting and ending cities with index 0
-            #set shortest tour as initial tour
-            tour = tours[0][0]
-            length = tours[0][1]
+        for i in range(len(tours)):
+            cur_tour = tours[i][0]
+            cur_length = tours[i][1]
+            cur_plan = kp.getPackingPlan(items, cur_tour, distmat, params)
+            p, t, o = calculateObjectiveValue(cur_tour,cur_plan,distmat,params)
+            #print("========")
+            #print(cur_length)
+            #print(o)
 
-            #create plans for each tour
-            #plan is a dict where the key is the city id and the value an array of tuples (profit,weight)
-            plan = {}
-            profit = 0
-            time = 0
-            objective = - math.inf
+            #update everything if new tour with plan is better
+            if o>objective:
+                if(objective > - math.inf):
+                    print("A longer tour was better")
+                tour = cur_tour
+                length = cur_length
+                plan = cur_plan
+                profit = p
+                time = t
+                objective = o
 
-            for i in range(len(tours)):
-                cur_tour = tours[i][0]
-                cur_length = tours[i][1]
-                cur_plan = kp.getPackingPlan(items, cur_tour, distmat, params)
-                p, t, o = calculateObjectiveValue(cur_tour,cur_plan,distmat,params)
-                #print("========")
-                #print(cur_length)
-                #print(o)
+    """             OUTPUT             """
+    print("\n\n===================TOUR==============")
+    print(tour)
 
-                #update everything if new tour with plan is better
-                if o>objective:
-                    if(objective > - math.inf):
-                        print("A longer tour was better")
-                    tour = cur_tour
-                    length = cur_length
-                    plan = cur_plan
-                    profit = p
-                    time = t
-                    objective = o
+    if(config.tsp_fitness == "simple"):
+        print("\n\n===================LENGTH==============")
+        print(length) #linkern length is around 2613 (using MATLAB code for a280)
 
-        """             OUTPUT             """
-        if(len(files)<3):
-            print("\n\n===================TOUR==============")
-            print(tour)
-        
-            if(config.tsp_fitness == "simple"):
-                print("\n\n===================LENGTH==============")
-                print(length) #linkern length is around 2613 (using MATLAB code for a280)
+    print("\n\n===================Plan==============")
+    print(plan)
 
-            print("\n\n===================Plan==============")
-            print(plan)
-
-        print("\n\n===================Objective==============")
-        print("Profit   : "+str(profit))
-        print("Time     : "+str(time))
-        print("Rent     : "+str(params["renting_rate"]))
-        print("Objective: "+str(objective))
+    print("\n\n===================Objective==============")
+    print("Profit   : "+str(profit))
+    print("Time     : "+str(time))
+    print("Rent     : "+str(params["renting_rate"]))
+    print("Objective: "+str(objective))

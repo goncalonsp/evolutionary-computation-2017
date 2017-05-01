@@ -51,10 +51,10 @@ files = [{
 """
 
 #"""
-files = [{
+file = {
 			"name": "a280_n279_bounded-strongly-corr_01.ttp",
 			"tour": "a280.linkern.tour"
-		}]
+		}
 #"""        
 
 def read_config(file):
