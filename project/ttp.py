@@ -89,17 +89,23 @@ if __name__ == '__main__':
     # Load configuration file
     configs = config.read_config(args.config)
 
+    # The following calls to get_config will search the provided config file for each variable value
+    # if no value is found or the config file is not specified each default value is assumed for each variable
+    # "locals()[]"" will get the function by reflection using the function name as key
+    use_linkern = config.get_config(configs, ['use_linkern'], False)
+    top_k = config.get_config(configs, ['top_k'], 5)
+    
     #TODO verify the solution on toy example from paper "The travelling thief problem: the first ..."
 
     folder = os.path.dirname(os.path.realpath(__file__))
-    tourpath = folder + "/instances/" + config.file["tour"]
+    tourpath = folder + "/instances/" + "a280.linkern.tour"
     
     # Read the file
     print("===================Instance==============")
     print(args.INPUT)
     distmat, items, params = readFile(args.INPUT)
 
-    if(config.use_linkern):
+    if(use_linkern):
         tour, length = readTour(tourpath)
         plan = kp.getPackingPlan(items, tour, distmat, params)
         profit, time, objective = calculateObjectiveValue(tour,plan,distmat,params)
@@ -108,7 +114,7 @@ if __name__ == '__main__':
         #maybe: after running kp - start over with tsp and find a good tour for that packing plan and continue with KP then and start to loop (not a super smart idea and super slow, but I didnt find a good solution yet)
 
         #return top k distinct tours as longer tours could be better for the whole problem (k in config)
-        tours = tsp.getTours(distmat) #tour does not include starting and ending cities with index 0
+        tours = tsp.getTours(distmat, configs['tsp'], top_k) #tour does not include starting and ending cities with index 0
         #set shortest tour as initial tour
         tour = tours[0][0]
         length = tours[0][1]
@@ -144,9 +150,8 @@ if __name__ == '__main__':
     print("\n\n===================TOUR==============")
     print(tour)
 
-    if(config.tsp_fitness == "simple"):
-        print("\n\n===================LENGTH==============")
-        print(length) #linkern length is around 2613 (using MATLAB code for a280)
+    print("\n\n===================LENGTH==============")
+    print(length) #linkern length is around 2613 (using MATLAB code for a280)
 
     print("\n\n===================Plan==============")
     print(plan)

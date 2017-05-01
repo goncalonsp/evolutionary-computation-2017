@@ -8,17 +8,15 @@ Adjusted by Sebastian Rehfeldt
 
 from random import random,randint, sample, gauss
 from operator import itemgetter
-import config
-
 
 # Simple Evolutionary Algorithm     
 def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
-    # inicialize population: indiv = (cromo,fit)
+    # initialize population: indiv = (cromo,fit)
     population = gera_pop(size_pop,size_cromo)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
     for i in range(numb_generations):
-        # sparents selection
+        # parents selection
         mate_pool = sel_parents(population)
     # Variation
     # ------ Crossover
@@ -38,10 +36,14 @@ def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_p
         # Evaluate the new population
         population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]   
 
-    return top_k_tours(population,config.top_k)
+    """
+    return: the best individual found
+            the population of the final generation
+    """
+    return best_pop(population), population
 
 def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
-    # inicialize population: indiv = (cromo,fit)
+    # initialize population: indiv = (cromo,fit)
     population = gera_pop(size_pop,size_cromo)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
@@ -50,7 +52,7 @@ def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cr
     stat_aver = [average_pop(population)]
 
     for i in range(numb_generations):
-        # sparents selection
+        # parents selection
         mate_pool = sel_parents(population)
 	# Variation
 	# ------ Crossover
@@ -73,13 +75,19 @@ def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cr
         stat.append(best_pop(population)[1])
         stat_aver.append(average_pop(population))
 
-    return best_pop(population),stat, stat_aver
+    """
+    return: the best individual found
+            the population of the final generation
+            the best individual from each generation
+            the average individual from each generation
+    """
+    return best_pop(population), population, stat, stat_aver
 
 def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
     statistics = []
     bestTours = []
     for i in range(numb_runs):
-        best,stat_best,stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
+        best, population, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
         bestTours.append(best)
         statistics.append(stat_best)
     stat_gener = list(zip(*statistics))
@@ -216,20 +224,3 @@ def best_pop(population):
 def average_pop(population):
     return sum([fit for cromo,fit in population])/len(population)
 
-def top_k_tours(population,k):
-    population.sort(key=itemgetter(1),reverse=False)
-
-    tours = []
-    fitnessValues = []
-    
-    i = 0
-    while len(tours)<k and i<len(population):
-        #add to tours if this tour is not already in best tours
-        pop = population[i][0]
-        if(not pop in tours):
-            tours.append(pop)
-            fitnessValues.append(population[i][1])
-
-        i += 1
-
-    return tours, fitnessValues

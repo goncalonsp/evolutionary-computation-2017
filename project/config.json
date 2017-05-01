@@ -1,8 +1,6 @@
 {
-    "general": {
-        "use_linkern": false,
-        "top_k": 5
-    },
+    "use_linkern": false,
+    "top_k": 5,
     "tsp": {
         "development": false,
         "plot_generations": true,
@@ -24,5 +22,8 @@
         "number_generations": 100,
         "size_population": 20,
         "maximum_chromosome_size": 100
+    },
+    "ks": {
+
     }
 }

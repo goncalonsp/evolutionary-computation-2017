@@ -7,7 +7,7 @@ Based on Ernesto Costa, February 2017
 from sea_tsp import *
 from utils import *
 from copy import deepcopy
-import config
+from config import get_config
 
 # fitness
 def fitness(distmat):
@@ -27,18 +27,17 @@ def phenotype(genotype):
     # first values are sorted in descending order
     # then original positions of these values form permutation
 
-    if config.tsp_interpretation == "simple":
-        sorted_geno = sorted(genotype,reverse=True)
-        #TODO find a more performant way for that
-        #TODO maybe also consider distance to previous city for the interpretation phase (selection of order)
-        genoTemp = deepcopy(genotype)
-        pheno = []
-        for val in sorted_geno:
-            index = genoTemp.index(val)
-            pheno.append(index+1)
+    sorted_geno = sorted(genotype,reverse=True)
+    #TODO find a more performant way for that
+    #TODO maybe also consider distance to previous city for the interpretation phase (selection of order)
+    genoTemp = deepcopy(genotype)
+    pheno = []
+    for val in sorted_geno:
+        index = genoTemp.index(val)
+        pheno.append(index+1)
 
-            genoTemp[index] = 2 #this is necessary in the case that random values are duplicated
-        return pheno
+        genoTemp[index] = 2 #this is necessary in the case that random values are duplicated
+    return pheno
 
 
 def evaluate(tour,distmat):
@@ -51,11 +50,27 @@ def evaluate(tour,distmat):
         distance += distmat[tour[i], tour[j]]
     distance += distmat[0,tour[number_of_cities-1]]
 
-    if config.tsp_fitness == "distance":
-        return distance
+    return distance
 
+def select_best_k_tours(population,k):
+    population.sort(key=itemgetter(1),reverse=False)
 
-def getTours(distmat):
+    tours = []
+    fitnessValues = []
+    
+    i = 0
+    while len(tours)<k and i<len(population):
+        #add to tours if this tour is not already in best tours
+        pop = population[i][0]
+        if(not pop in tours):
+            tours.append(pop)
+            fitnessValues.append(population[i][1])
+
+        i += 1
+
+    return tours, fitnessValues
+
+def getTours(distmat, configs, ntours):
 
     my_fitness = fitness(distmat)
     size_cromo = distmat.shape[0]-1 # as the starting and ending point is fixed
@@ -65,33 +80,38 @@ def getTours(distmat):
     #print(evaluate(phenotype(geno),distmat))
     #should be 0,2,1,3,0 and dist should be 109.68....
 
+    # The following calls to get_config will search the provided config file for each variable value
+    # if no value is found or the config file is not specified each default value is assumed for each variable
+    
     #parameters follow Golomb Ruler paper EC8 from theoretical work
-    generations = config.generations
-    population = config.population
-    prob_muta = config.prob_muta
-    prob_cross = config.prob_cross
-    sigma = config.sigma
-    tour_size = config.tour_size
-    elite_size = config.elite_size
+    generations = get_config(configs, ['number_generations'], 100)
+    population_size = get_config(configs, ['size_population'], 20)
+    prob_muta = get_config(configs, ['mutation', 'probability'], 0.25)
+    prob_cross = get_config(configs, ['crossover', 'probability'], 0.75)
+    sigma = get_config(configs, ['mutation', 'sigma'], 0.1)
+    tour_size = get_config(configs, ['tournament_size'], 5)
+    elite_size = get_config(configs, ['elite_percentage'], 0.1)
+    runs = get_config(configs, ['runs'], 5)
+
+    tsp_development = get_config(configs, ['development'], False)
+    tsp_plot_generations = get_config(configs, ['plot_generations'], True)
 
     bestTours = []
 
-    if(config.tsp_development):
-        best, stat, stat_average = sea_for_plot(generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
-        if(config.tsp_plot_generations):
+    if(tsp_development):
+        if(tsp_plot_generations):
+            best, population, stat, stat_average = sea_for_plot(generations,population_size, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
             display_stat_1(stat,stat_average)
-            bestTours.append((phenotype(best[0]),best[1]))
+            bestTours = select_best_k_tours(population, ntours)
         else:
-            best, best_average, tours = run(config.tsp_runs,generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
-            display_stat_n(best,best_average)
-            #append first best tour to bestTours to allow rest of program to run
-            bestTours.append((phenotype(tours[0][0]),tours[0][1]))
-        
-    else:
-        tours, fitnessValues = sea(generations,population, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
-        
-        for i in range(len(tours)):
-            bestTours.append((phenotype(tours[i]),fitnessValues[i]))
+            best, population = sea(generations,population_size, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
+            bestTours = select_best_k_tours(population, ntours)
 
+    else:
+        best, best_average, tours = run(runs, generations,population_size, size_cromo, prob_muta, sigma, prob_cross,tour_sel(tour_size),two_points_cross,muta_float_gaussian,sel_survivors_elite(elite_size), my_fitness)
+        display_stat_n(best,best_average)
+        #append first best tour to bestTours to allow rest of program to run
+        bestTours.append((phenotype(tours[0][0]),tours[0][1]))
+    
     return bestTours
     
