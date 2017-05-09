@@ -1,0 +1,30 @@
+{
+    "use_linkern": false,
+    "top_k": 5,
+    "tsp": {
+        "development": false,
+        "plot_generations": true,
+        "runs": 2,
+        "fitness": "distance",
+        "interpretation": "simple",
+        "representation": "permutation",
+
+    	"mutation": {
+    		"probability": 0.02,
+    		"function": "muta_int_add",
+            "sigma": 0.1
+    	},
+        "crossover": {
+        	"probability": 0.8,
+        	"function": "max_size_cross"
+        },
+        "tournament_size": 5,
+        "elite_percentage": 0.1,
+        "number_generations": 100,
+        "size_population": 100,
+        "maximum_chromosome_size": 100
+    },
+    "ks": {
+
+    }
+}
