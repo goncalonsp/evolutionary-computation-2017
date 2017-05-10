@@ -6,9 +6,12 @@ Based on Ernesto Costa, February 2017
 
 import sea_tsp_randkey
 import sea_tsp_permutation
+from kp import get_best_five_items
 from utils import *
 from copy import deepcopy
 from config import get_config
+import numpy as np
+from random import shuffle
 
 # fitness for rand key representation
 def fitness_randkey(distmat):
@@ -70,7 +73,6 @@ def evaluate(tour,distmat):
 
     return distance
 
-
 def select_best_k_tours(population,k):
     population.sort(key=itemgetter(1),reverse=False)
 
@@ -89,7 +91,39 @@ def select_best_k_tours(population,k):
 
     return tours, fitnessValues
 
-def getTours(distmat, configs, ntours):
+def heuristic_pop_generation(distmat, items):
+    def _heuristic_pop_generation(size_pop, size_cromo):
+        # We just pick the best items because bad items could lower the value
+        # of the whole city. However, "5" is an arbitrary number which should be changed
+        cities_value = [ np.mean(get_best_five_items(i,items)) for i in range(1,size_cromo+1) ]
+        max_value = np.amax(cities_value)
+
+        # Most valuable cities must be at the end of the tour
+        # Therefore, less attractive to be picked at the beggining
+        # This is translated into a lower probability.
+        cities_value = [ (1/v) * max_value for v in cities_value ]
+        cities_value = [ v/sum(cities_value) for v in cities_value ]
+
+        return [(heuristic_tsp_indiv_generation(cities_value, size_cromo),0) for i in range(size_pop)]
+    return _heuristic_pop_generation
+
+def heuristic_tsp_indiv_generation(cities_value, size_cromo):
+    indiv = list(range(1, size_cromo+1))
+
+    # Pick the first city based on the probabilities of its value
+    first_city = np.random.choice(indiv, p=cities_value)
+
+    # Fill the rest of the chromosome with the other cities randomly shuffled
+    shuffle(indiv)
+
+    # Restore First city postiion
+    first_city_idx = indiv.index(first_city)
+    indiv[first_city_idx] = indiv[0]
+    indiv[0] = first_city
+
+    return indiv
+
+def getTours(distmat, items, configs, ntours):
 
     size_cromo = distmat.shape[0]-1 # as the starting and ending point is fixed
     
@@ -126,6 +160,7 @@ def getTours(distmat, configs, ntours):
         mutation = sea_tsp_randkey.muta_float_gaussian
         tour_selection = sea_tsp_randkey.tour_sel(tour_size)
         sel_survivors = sea_tsp_randkey.sel_survivors_elite(elite_size)
+        gen_population = sea_tsp_randkey.gera_pop
 
     elif representation == "permutation":
         
@@ -137,6 +172,10 @@ def getTours(distmat, configs, ntours):
         mutation = sea_tsp_permutation.muta_permutation
         tour_selection = sea_tsp_permutation.tour_sel(tour_size)
         sel_survivors = sea_tsp_permutation.sel_survivors_elite(elite_size)
+        if get_config(configs, ['gen_population'], "random") == "random":
+            gen_population = sea_tsp_permutation.gera_pop
+        else:
+            gen_population = heuristic_pop_generation(distmat, items)
 
     else:
         raise LookupError('Unknown representation \'{}\' chosen in configuration!'.format(representation))
@@ -157,7 +196,8 @@ def getTours(distmat, configs, ntours):
                                                         crossover,
                                                         mutation,
                                                         sel_survivors, 
-                                                        my_fitness)
+                                                        my_fitness,
+                                                        gen_population)
             
             display_stat_1(stat,stat_average)
             bestTours = select_best_k_tours(population, ntours)
@@ -173,7 +213,8 @@ def getTours(distmat, configs, ntours):
                                 crossover,
                                 mutation,
                                 sel_survivors, 
-                                my_fitness)
+                                my_fitness,
+                                gen_population)
 
             bestTours = select_best_k_tours(population, ntours)
 
@@ -190,7 +231,8 @@ def getTours(distmat, configs, ntours):
                                         crossover,
                                         mutation,
                                         sel_survivors, 
-                                        my_fitness)
+                                        my_fitness,
+                                        gen_population)
 
         if(tsp_plot_generations):
             display_stat_n(best,best_average)
@@ -202,4 +244,7 @@ def getTours(distmat, configs, ntours):
             bestTours.append((phenotype_from_permutation(tours[0][0]),tours[0][1]))
     
     return bestTours
+    
+
+if __name__ == '__main__':
     

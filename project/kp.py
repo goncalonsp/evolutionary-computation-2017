@@ -2,7 +2,20 @@
 kp.py
 Sebastian Rehfeldt, April 2017
 """
-import numpy
+import numpy as np
+
+
+def get_best_five_items(city, items):
+    city_items = items[str(city)]
+
+    # Send only the best 5 items.
+    # If there are no more than 5 item, send them all.
+    if len(city_items) > 5:
+        return sorted(city_items, key=get_item_ratio, reverse=True)[0:5]
+    return sorted(city_items, key=get_item_ratio, reverse=True)
+
+def get_item_ratio(item):
+    return item[0]/item[1]
 
 def getPackingPlan(items, tour, distmat, params):
 	#TODO implement EA algorithm later
@@ -36,12 +49,12 @@ def getPackingPlan(items, tour, distmat, params):
 	#calculate score and fitness value for each item (value-R*time to finish)
 	#items will be an array which contains dictionarys (city id, profit, weight, score, fitness)
 	#uses simple heuristic from paper "A comprehensive benchmark..."
-	scoredItems = numpy.empty(n_items, dtype=object)
+	scoredItems = np.empty(n_items, dtype=object)
 	j = 0
 	for i in range(len(tour)):
 		city = tour[i]
 		dist = distanceToFinish[i]
-		for item in items[str(tour[i])]:
+		for item in items[str(city)]:
 			p = item[0]
 			w = item[1]
 
@@ -69,7 +82,7 @@ def getPackingPlan(items, tour, distmat, params):
 	for item in scoredItems:
 		city = str(item["city_id"])
 
-		if (cur_capacity+item["weight"]<capacity) and (item["fitness"]>0):
+		if (cur_capacity+item["weight"]<=capacity) and (item["fitness"]>0):
 
 			keys = list(packedItems.keys())
 			if city in keys:

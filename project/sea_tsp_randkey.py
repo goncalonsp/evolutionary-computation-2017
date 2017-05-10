@@ -10,9 +10,9 @@ from random import random,randint, sample, gauss
 from operator import itemgetter
 
 # Simple Evolutionary Algorithm     
-def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
+def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
     # initialize population: indiv = (cromo,fit)
-    population = gera_pop(size_pop,size_cromo)
+    population = gen_pop_func(size_pop,size_cromo)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
     for i in range(numb_generations):
@@ -42,9 +42,9 @@ def sea(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_p
     """
     return best_pop(population), population
 
-def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
+def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
     # initialize population: indiv = (cromo,fit)
-    population = gera_pop(size_pop,size_cromo)
+    population = gen_pop_func(size_pop,size_cromo)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
 
@@ -83,13 +83,14 @@ def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, sigma, prob_cr
     """
     return best_pop(population), population, stat, stat_aver
 
-def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
+def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
     statistics = []
     bestTours = []
     for i in range(numb_runs):
-        best, population, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
+        best, population, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func)
         bestTours.append(best)
         statistics.append(stat_best)
+        print("{}%".format( (i+1)*100/numb_runs ))
     stat_gener = list(zip(*statistics))
     best = [min(g_i) for g_i in stat_gener] # minimization
     aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
