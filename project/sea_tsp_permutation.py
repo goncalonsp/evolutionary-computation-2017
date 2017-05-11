@@ -91,6 +91,7 @@ def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross
         bestTours.append(best)
         statistics.append(stat_best)
         print("{}%".format( (i+1)*100/numb_runs ))
+        print("Best fitness: {}".format(best[1]))
     stat_gener = list(zip(*statistics))
     best = [min(g_i) for g_i in stat_gener] # minimization
     aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
@@ -187,7 +188,7 @@ def tour_sel(t_size):
     return tournament
 
 def one_tour(population,size):
-    """Maximization Problem. Deterministic"""
+    """Minimization Problem. Deterministic"""
     pool = sample(population, size)
     pool.sort(key=itemgetter(1), reverse=False)
     return pool[0]

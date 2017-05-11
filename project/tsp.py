@@ -12,6 +12,7 @@ from copy import deepcopy
 from config import get_config
 import numpy as np
 from random import shuffle
+from operator import itemgetter
 
 # fitness for rand key representation
 def fitness_randkey(distmat):
@@ -66,11 +67,11 @@ def evaluate(tour,distmat):
     distance = distmat[0,tour[0]] #distance from fixed starting point to first city of tour
     #TODO consider also where items are available
     #cities with high valued and heavy items should be in the end of the tour
+
     for i in range(number_of_cities-1):
-        j = (i + 1) % number_of_cities
+        j = i + 1
         distance += distmat[tour[i], tour[j]]
     distance += distmat[0,tour[number_of_cities-1]]
-
     return distance
 
 def select_best_k_tours(population,k):
@@ -111,17 +112,20 @@ def heuristic_tsp_indiv_generation(cities_value, size_cromo):
     indiv = list(range(1, size_cromo+1))
 
     # Pick the first city based on the probabilities of its value
-    first_city = np.random.choice(indiv, p=cities_value)
+    first_cities = np.random.choice(indiv, size=size_cromo, replace=False, p=cities_value)
 
     # Fill the rest of the chromosome with the other cities randomly shuffled
-    shuffle(indiv)
+    # shuffle(indiv)
 
-    # Restore First city postiion
-    first_city_idx = indiv.index(first_city)
-    indiv[first_city_idx] = indiv[0]
-    indiv[0] = first_city
+    # Restore First cities postiion (Necessary if we shuffle the list)
+    # for order in range(len(last_cities)):
+    #     city = last_cities[order]
+    #     inverse_order = - 1 - order
+    #     city_idx = indiv.index(city)
+    #     indiv[city_idx] = indiv[inverse_order]
+    #     indiv[inverse_order] = city
 
-    return indiv
+    return list(first_cities)
 
 def getTours(distmat, items, configs, ntours):
 
@@ -236,7 +240,7 @@ def getTours(distmat, items, configs, ntours):
 
         if(tsp_plot_generations):
             display_stat_n(best,best_average)
-            
+
         #append first best tour to bestTours to allow rest of program to run
         if representation == "random key":
             bestTours.append((phenotype_from_randkey(tours[0][0]),tours[0][1]))
@@ -244,7 +248,3 @@ def getTours(distmat, items, configs, ntours):
             bestTours.append((phenotype_from_permutation(tours[0][0]),tours[0][1]))
     
     return bestTours
-    
-
-if __name__ == '__main__':
-    

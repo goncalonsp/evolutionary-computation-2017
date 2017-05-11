@@ -160,3 +160,4 @@ if __name__ == '__main__':
     print("Time     : "+str(time))
     print("Rent     : "+str(params["renting_rate"]))
     print("Objective: "+str(objective))
+    
