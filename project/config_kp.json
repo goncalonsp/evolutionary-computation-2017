@@ -1,0 +1,19 @@
+{
+    "development": true,
+    "plot_generations": true,
+
+    "runs": 1,
+
+	"mutation": {
+		"probability": 0.01,
+		"function": "muta_int_add"
+	},
+    "crossover": {
+    	"probability": 0.8,
+    	"function": "max_size_cross"
+    },
+    "tournament_size": 5,
+    "elite_percentage": 0.1,
+    "number_generations": 100,
+    "size_population": 100
+}
