@@ -84,13 +84,13 @@ def select_best_k_tours(population,k):
     while len(tours)<k and i<len(population):
         #add to tours if this tour is not already in best tours
         pop = population[i][0]
+        length = population[i][1]
         if(not pop in tours):
-            tours.append(pop)
-            fitnessValues.append(population[i][1])
+            tours.append((pop,length))
 
         i += 1
 
-    return tours, fitnessValues
+    return tours
 
 def heuristic_pop_generation(distmat, items):
     def _heuristic_pop_generation(size_pop, size_cromo):
