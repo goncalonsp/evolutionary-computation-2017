@@ -12,6 +12,7 @@ from copy import deepcopy
 from config import get_config
 import numpy as np
 from random import shuffle
+from operator import itemgetter
 
 # fitness for rand key representation
 def fitness_randkey(distmat):
@@ -244,7 +245,3 @@ def getTours(distmat, items, configs, ntours):
             bestTours.append((phenotype_from_permutation(tours[0][0]),tours[0][1]))
     
     return bestTours
-    
-
-if __name__ == '__main__':
-    
