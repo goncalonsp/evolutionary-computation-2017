@@ -7,24 +7,24 @@
     
     "tsp": {
         "mutation": {
-            "probability": 0.8352930122846389
+            "probability": 0.18212497735774824
         },
         "crossover": {
-            "probability": 0.3574669604345475
+            "probability": 0.35700377011936124
         }
     },
     
     "kp": {
         "mutation": {
-            "probability": 0.3893455007848201
+            "probability": 0.3077580841036177
         },
         "crossover": {
-            "probability": 0.7954961069777816
+            "probability": 0.4164358597929665
         }
     },
 
     "tournament_size": 5,
-    "elite_percentage": 0.5218115667153486,
+    "elite_percentage": 0.09203029243949246,
     "number_generations": 100,
     "size_population": 100
 }

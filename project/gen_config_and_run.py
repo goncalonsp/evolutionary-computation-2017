@@ -1,8 +1,9 @@
 
 import sys
 import random
+import os
 
-#Generates new config files and runs algorithm
+#Generates new config files and runs algorithm(missing!)
 #Call with args[1] equal to number of configs
 #Ex: python3 gen_config_and_run.py 10
 
@@ -43,11 +44,16 @@ import random
 
 
 
+
+
+
+
 def generateConfigFiles(number_of_files):
 
 
     for i in range(0,number_of_files):
-        config = open("gen_configs_ttp_ea/config_ttp_ea_" + str(i) + ".json","w");  
+        file_name = "gen_configs_ttp_ea/config_ttp_ea_" + str(i) + ".json";
+        config = open(file_name,"w");  
 
 
         tsp_mutation_probability = random.uniform(0.0, 1.0);
@@ -56,7 +62,7 @@ def generateConfigFiles(number_of_files):
         kp_crossover_probability = random.uniform(0.0, 1.0);
         elite_percentage = random.uniform(0.0, 1.0);
 
-        
+
         config.write('{\n');
         config.write('    "_use_": "Use this config file with the ttp_ea.py script",\n');
         config.write('    \n');
@@ -89,6 +95,10 @@ def generateConfigFiles(number_of_files):
         config.write('}\n');
 
         config.close();
+
+
+
+        os.system("python3 ttp_ea.py -c " + file_name + " instances/a280_n279_bounded-strongly-corr_01.ttp")
 
 
 
