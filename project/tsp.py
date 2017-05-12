@@ -127,7 +127,62 @@ def heuristic_tsp_indiv_generation(cities_value, size_cromo):
 
     return list(first_cities)
 
-def getTours(distmat, items, configs, ntours):
+def dist_heuristic_pop_generation(shortest_cities):
+    def _dist_heuristic_pop_generation(size_pop, size_cromo):
+        # select size_pop random starting points
+        # always go to closest cities from current city, which was not yet visited
+        # should result into shorter tours
+
+        starting_points = list(range(1,size_cromo))
+        shuffle(starting_points)
+        starting_points = starting_points[:size_pop]
+
+        return [(dist_heuristic_tsp_indiv_generation(starting_points.pop(0), shortest_cities, size_cromo),0) for i in range(size_pop)]
+    return _dist_heuristic_pop_generation
+
+def dist_heuristic_tsp_indiv_generation(start,shortest_cities, size_cromo):
+    
+    indiv = []
+    indiv.append(start)
+    current_city = start
+
+    for i in range(1,size_cromo):
+        cities = shortest_cities[current_city]
+        for j in range(size_cromo):
+            if not (cities[j] in indiv or cities[j] == 0):
+                current_city = cities[j]
+                indiv.append(current_city)
+                break
+
+    return indiv
+
+def mixed_heuristic_pop_generation(distmat, items, shortest_cities):
+    def _mixed_heuristic_pop_generation(size_pop, size_cromo):
+        value_heuristic_size = int(size_pop/2)
+        dist_heuristic_size = size_pop - value_heuristic_size
+        pop = []
+
+        # value heuristic
+        cities_value = [ np.mean(get_best_five_items(i,items)) for i in range(1,size_cromo+1) ]
+        max_value = np.amax(cities_value)
+        cities_value = [ (1/v) * max_value for v in cities_value ]
+        cities_value = [ v/sum(cities_value) for v in cities_value ]
+
+        # dist heuristic
+        starting_points = list(range(1,size_cromo))
+        shuffle(starting_points)
+        starting_points = starting_points[:size_pop]
+
+        for i in range(value_heuristic_size):
+            pop.append((heuristic_tsp_indiv_generation(cities_value, size_cromo),0))
+        for i in range(dist_heuristic_size):
+            pop.append((dist_heuristic_tsp_indiv_generation(starting_points.pop(0), shortest_cities, size_cromo),0))
+
+        return pop
+
+    return _mixed_heuristic_pop_generation
+
+def getTours(distmat, items, shortest_cities, configs, ntours):
 
     size_cromo = distmat.shape[0]-1 # as the starting and ending point is fixed
     
@@ -178,6 +233,10 @@ def getTours(distmat, items, configs, ntours):
         sel_survivors = sea_tsp_permutation.sel_survivors_elite(elite_size)
         if get_config(configs, ['gen_population'], "random") == "random":
             gen_population = sea_tsp_permutation.gera_pop
+        elif get_config(configs, ['gen_population'], "dist_heuristic") == "dist_heuristic":
+            gen_population = dist_heuristic_pop_generation(shortest_cities)
+        elif get_config(configs, ['gen_population'], "mixed_heuristic") == "mixed_heuristic":
+            gen_population = mixed_heuristic_pop_generation(distmat, items,shortest_cities)
         else:
             gen_population = heuristic_pop_generation(distmat, items)
 

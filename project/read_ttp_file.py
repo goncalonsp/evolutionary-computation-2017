@@ -50,6 +50,17 @@ def createDistMat(coordinates):
             distmat[j,i]= dist     
     return distmat
 
+def calculateShortestCities(distmat):
+    # returns a dict where the keys are cities and values vectors of cities ordered by distance
+    # the values inside the vector start at zero
+    shortest_cities = {}
+
+    for i in range(len(distmat)):
+        sorted_list = sorted(distmat[i])
+        shortest_cities[i] = numpy.argsort(distmat[i])[1:]
+
+    return shortest_cities
+
 
 def readFile(file):
     with  open(file) as file_in:
@@ -89,6 +100,8 @@ def readFile(file):
 
         #calculate distant matrix
         distmat = createDistMat(coordinates)
+        
+        shortest_cities = calculateShortestCities(distmat)
 
         #read items (index, profit, weight, assigned node number)
         #each city stores tuples of items having a profit and weight
@@ -107,7 +120,7 @@ def readFile(file):
             else:
                 items[node] = [(float(p),float(w))]
 
-    return distmat, items, problem_parameters
+    return distmat, items, shortest_cities, problem_parameters
 
 if __name__ == '__main__':
     """ Run me directly to see how the readFile function reads the ttp files """

@@ -143,7 +143,7 @@ if __name__ == '__main__':
     # Read the file
     print("===================Instance==============")
     print(args.INPUT)
-    distmat, items, params = readFile(args.INPUT)
+    distmat, items, shortest_cities, params = readFile(args.INPUT)
 
 
     # Define EA parameters

@@ -102,7 +102,7 @@ if __name__ == '__main__':
     # Read the file
     print("===================Instance==============")
     print(args.INPUT)
-    distmat, items, params = readFile(args.INPUT)
+    distmat, items, shortest_cities, params = readFile(args.INPUT)
 
     if(use_linkern):
         tour, length = readTour(tourpath)
@@ -113,7 +113,8 @@ if __name__ == '__main__':
         #maybe: after running kp - start over with tsp and find a good tour for that packing plan and continue with KP then and start to loop (not a super smart idea and super slow, but I didnt find a good solution yet)
 
         #return top k distinct tours as longer tours could be better for the whole problem (k in config)
-        tours = tsp.getTours(distmat, items, configs['tsp'], top_k) #tour does not include starting and ending cities with index 0
+        #print(shortest_cities[0])
+        tours = tsp.getTours(distmat, items, shortest_cities, configs['tsp'], top_k) #tour does not include starting and ending cities with index 0
         #set shortest tour as initial tour
         tour = tours[0][0]
         length = tours[0][1]
