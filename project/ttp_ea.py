@@ -213,7 +213,6 @@ if __name__ == '__main__':
     #         time = t
     #         objective = o
 
-    print(best)
     tour = phenotype_tsp(best[0][0])
     length = evaluate_tsp(tour, distmat)
     plan = phenotype_kp(best[0][1])
