@@ -1,0 +1,30 @@
+{
+    "_use_": "Use this config file with the ttp_ea.py script",
+    
+    "development": true,
+    "plot_generations": true,
+    "runs": 1,
+    
+    "tsp": {
+        "mutation": {
+            "probability": 0.4272787041562982
+        },
+        "crossover": {
+            "probability": 0.22187901991758752
+        }
+    },
+    
+    "kp": {
+        "mutation": {
+            "probability": 0.8666105844305071
+        },
+        "crossover": {
+            "probability": 0.593736196980882
+        }
+    },
+
+    "tournament_size": 5,
+    "elite_percentage": 0.38995924360737744,
+    "number_generations": 100,
+    "size_population": 100
+}
