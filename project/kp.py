@@ -135,7 +135,7 @@ def fitness(items, params):
 		dimension: 280
 	"""
 	def fitness_(indiv):
-		quali = evaluate(phenotype(indiv))
+		quali = evaluate(phenotype(indiv), items, params)
 		return quali
 	return fitness_
 
@@ -144,19 +144,19 @@ def phenotype(indiv):
 	pheno = [idx+1 for idx, val in enumerate(indiv) if val == 1]
 	return pheno
 
-def calc_total_weight(pheno, items):
+def calc_weight(pheno, items):
 	return sum([items[str(city)][0][1] for city in pheno])
 
-def evaluate(pheno):
+def evaluate(pheno, items, params):
 	""" pheno = [...,2,243,15,59,...]"""
-	total_weight = calc_total_weight(pheno, items)
+	total_weight = calc_weight(pheno, items)
 	if total_weight > params['kp_capacity']:
 		return 0
 	return sum([items[str(city)][0][0] for city in pheno])
 
-def evaluate_log(pheno):
+def evaluate_log(pheno, items, params):
 	""" pheno = [...,2,243,15,59,...]"""
-	total_weight = calc_total_weight(pheno, items)
+	total_weight = calc_weight(pheno, items)
 	quality = sum([items[str(city)][0][0] for city in pheno])
 	capacity = params['kp_capacity']
 	if total_weight > capacity:
@@ -164,9 +164,9 @@ def evaluate_log(pheno):
 		quality -= math.log(1 + rho * (total_weight - capacity),2)
 	return quality
 
-def evaluate_quadratic(pheno):
+def evaluate_quadratic(pheno, items, params):
 	""" pheno = [...,[id,weight,value],...]"""
-	total_weight = calc_total_weight(pheno, items)
+	total_weight = calc_weight(pheno, items)
 	quality = sum([items[str(city)][0][0] for city in pheno])
 	capacity = params['kp_capacity']
 	if total_weight > capacity:
@@ -254,7 +254,7 @@ if __name__ == '__main__':
 								gen_population)
 
 		print(best)
-		print(calc_total_weight(phenotype(best[0]), items))
+		print(calc_weight(phenotype(best[0]), items))
 
 
 	else:
