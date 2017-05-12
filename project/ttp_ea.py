@@ -15,6 +15,7 @@ from tsp import evaluate as evaluate_tsp
 from kp import phenotype as phenotype_kp
 from kp import evaluate as evaluate_kp
 from kp import calc_weight
+from ttp import calculateObjectiveValue
 
 def fitness(distmat, items, params):
     """
@@ -65,7 +66,8 @@ def evaluate(pheno):
 
     # calculate the profit
     rent = params['renting_rate']
-    return totalValuePlan - rent * time
+
+    return totalValuePlan - (rent * time)
 
 def calc_time(pheno, distmat, items, params):
     phenoTour = pheno[0]
@@ -82,7 +84,8 @@ def calc_time(pheno, distmat, items, params):
     # calculate the time from the last to the first city
     currentWeight = calc_weight(tempPlan, items)
     velocity = vmax - currentWeight * (vmax - vmin) / totalCapacity
-    time = distmat[0, nCities-1] / velocity
+    time = distmat[0, phenoTour[nCities-1]] / velocity
+    length = distmat[0, phenoTour[nCities-1]]
     
     # calculate the time for all other cities in reverse
     for i in range(nCities-1, 0, -1):
@@ -93,7 +96,8 @@ def calc_time(pheno, distmat, items, params):
         # calculate the time from city i-1 to city i
         currentWeight = calc_weight(tempPlan, items)
         velocity = vmax - currentWeight * (vmax - vmin) / totalCapacity
-        time += distmat[i-1, i] / velocity
+        time += distmat[phenoTour[i-1], phenoTour[i]] / velocity
+        length += distmat[phenoTour[i-1], phenoTour[i]]
 
     if time < 0:
         print(time)
@@ -125,6 +129,7 @@ if __name__ == '__main__':
     # "locals()[]"" will get the function by reflection using the function name as key
     generations = config.get_config(configs, ['number_generations'], 100)
     population_size = config.get_config(configs, ['size_population'], 20)
+    tsp_init_pop = config.get_config(configs, ['tsp', 'initial_pop'], "heuristic")
     
     prob_muta_tsp = config.get_config(configs, ['tsp', 'mutation', 'probability'], 0.25)
     prob_cross_tsp = config.get_config(configs, ['tsp', 'crossover', 'probability'], 0.75)
@@ -158,7 +163,7 @@ if __name__ == '__main__':
     sel_survivors = sea_ttp.sel_survivors_elite(elite_size)
     gen_population = sea_ttp.gera_pop
 
-    args = [generations, population_size, size_cromo, prob_muta, prob_cross, tour_selection, crossover, mutation, sel_survivors, my_fitness, gen_population]
+    args = [generations, population_size, size_cromo, prob_muta, prob_cross, tour_selection, crossover, mutation, sel_survivors, my_fitness, gen_population,shortest_cities,tsp_init_pop]
 
     if(development):
         if(plot_generations):
@@ -208,13 +213,14 @@ if __name__ == '__main__':
     #         time = t
     #         objective = o
 
+    print(best)
     tour = phenotype_tsp(best[0][0])
     length = evaluate_tsp(tour, distmat)
     plan = phenotype_kp(best[0][1])
     weight = calc_weight(plan, items)
     profit = evaluate_kp(plan, items, params)
     time = calc_time((tour, plan), distmat, items, params)
-    objective = best[1]
+    objective = profit - time*params["renting_rate"]
 
     """             OUTPUT             """
     print("\n\n===================TOUR==============")

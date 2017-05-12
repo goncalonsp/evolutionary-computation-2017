@@ -8,14 +8,16 @@ Adjusted by Gonçalo Pereira
 
 from random import random,randint, sample, gauss
 from operator import itemgetter
+from tsp import dist_heuristic_tsp_indiv_generation
+from random import shuffle
 
 import sea_tsp_permutation as sea_tsp
 import sea_bin_2016_visual as sea_kp
 
 # Simple Evolutionary Algorithm     
-def sea(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
+def sea(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func, shortest_cities,tsp_init_pop):
     # initialize population: indiv = (cromo,fit)
-    population = gen_pop_func(size_pop,size_cromo)
+    population = gen_pop_func(size_pop,size_cromo, shortest_cities,tsp_init_pop)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
     for i in range(numb_generations):
@@ -45,9 +47,9 @@ def sea(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,
     """
     return best_pop(population), population
 
-def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
+def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func, shortest_cities,tsp_init_pop):
     # initialize population: indiv = (cromo,fit)
-    population = gen_pop_func(size_pop,size_cromo)
+    population = gen_pop_func(size_pop,size_cromo, shortest_cities,tsp_init_pop)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
 
@@ -86,11 +88,11 @@ def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel
     """
     return best_pop(population), population, stat, stat_aver
 
-def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
+def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func, shortest_cities,tsp_init_pop):
     statistics = []
     bestTours = []
     for i in range(numb_runs):
-        best, population, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func)
+        best, population, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func, shortest_cities,tsp_init_pop)
         bestTours.append(best)
         statistics.append(stat_best)
         print("{}%".format( (i+1)*100/numb_runs ))
@@ -101,12 +103,18 @@ def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross
     
 
 # Initialize population
-def gera_pop(size_pop,size_cromo):
-    return [(gera_indiv(size_cromo),0) for i in range(size_pop)]
+def gera_pop(size_pop,size_cromo, shortest_cities,tsp_init_pop):
+    starting_points = list(range(1,size_cromo))
+    shuffle(starting_points)
+    starting_points = starting_points[:size_pop]
 
-def gera_indiv(size_cromo):
-    # random initialization
-    indiv = (sea_tsp.gera_indiv(size_cromo), sea_kp.gera_indiv(size_cromo))
+    return [(gera_indiv(size_cromo,starting_points.pop(0),shortest_cities,tsp_init_pop),0) for i in range(size_pop)]
+
+def gera_indiv(size_cromo,start, shortest_cities,tsp_init_pop):
+    if tsp_init_pop == "random":
+        indiv = (sea_tsp.gera_indiv(size_cromo), sea_kp.gera_indiv(size_cromo))
+    else:
+        indiv = (dist_heuristic_tsp_indiv_generation(start,shortest_cities,size_cromo), sea_kp.gera_indiv(size_cromo))
     return indiv
 
 # Variation operators: mutation     

@@ -11,7 +11,8 @@
     	},
         "crossover": {
         	"probability": 0.8
-        }
+        },
+        "initial_pop": "random"
     },
 
     "kp": {
