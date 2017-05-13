@@ -9,6 +9,9 @@ from read_ttp_file import readFile
 from argparse import ArgumentParser
 import math
 import config
+from random import shuffle, randint
+
+import sea_tsp_permutation as sea_tsp
 
 from tsp import phenotype_from_permutation as phenotype_tsp
 from tsp import evaluate as evaluate_tsp
@@ -16,6 +19,7 @@ from kp import phenotype as phenotype_kp
 from kp import evaluate as evaluate_kp
 from kp import calc_weight
 from ttp import calculateObjectiveValue
+from tsp import dist_heuristic_tsp_indiv_generation
 
 def fitness(distmat, items, params):
     """
@@ -58,9 +62,9 @@ def evaluate(pheno):
     phenoPlan = pheno[1]
 
     totalValuePlan = evaluate_kp(phenoPlan, items, params)
-    if totalValuePlan == 0:
-        # we have an invalid picking plan
-        return 0
+    # if totalValuePlan == 0:
+    #     # we have an invalid picking plan
+    #     return 0
 
     time = calc_time(pheno, distmat, items, params)
 
@@ -83,6 +87,7 @@ def calc_time(pheno, distmat, items, params):
 
     # calculate the time from the last to the first city
     currentWeight = calc_weight(tempPlan, items)
+    currentWeight = (totalCapacity if currentWeight > totalCapacity else currentWeight)
     velocity = vmax - currentWeight * (vmax - vmin) / totalCapacity
     time = distmat[0, phenoTour[nCities-1]] / velocity
     
@@ -95,6 +100,7 @@ def calc_time(pheno, distmat, items, params):
         
         # calculate the time from city i-1 to city i of the tour
         currentWeight = calc_weight(tempPlan, items)
+        currentWeight = (totalCapacity if currentWeight > totalCapacity else currentWeight)
         velocity = vmax - currentWeight * (vmax - vmin) / totalCapacity
         time += distmat[phenoTour[i-1], phenoTour[i]] / velocity
 
@@ -102,12 +108,43 @@ def calc_time(pheno, distmat, items, params):
     # no items have been picked, no impact on velocity
     time += distmat[0, phenoTour[0]]
 
-    if time < 0:
-        print(time)
-        print(pheno)
-        print(evaluate_kp(phenoPlan, items, params))
-        asda
     return time
+
+# EA Custom functions!
+# population generation with custom knowledge about the problem!
+def gera_pop_ttp_random(distmat, items, params):
+    def gera_pop(size_pop, size_cromo):
+        return [(gera_indiv_random(size_cromo),0) for i in range(size_pop)]
+    
+    return gera_pop
+
+def gera_pop_ttp_heuristic(distmat, items, params, shortest_cities):
+    def gera_pop(size_pop,size_cromo):
+        starting_points = list(range(1,size_cromo))
+        shuffle(starting_points)
+        starting_points = starting_points[:size_pop]
+
+        return [(gera_indiv_heuristic(size_cromo, starting_points.pop(0)),0) for i in range(size_pop)]
+
+    return gera_pop
+
+def gera_indiv_random(size_cromo):
+    return (sea_tsp.gera_indiv(size_cromo), gera_kp_indiv(size_cromo))
+
+def gera_indiv_heuristic(size_cromo, start):
+    return (dist_heuristic_tsp_indiv_generation(start, shortest_cities, size_cromo), gera_kp_indiv(size_cromo))
+
+def gera_kp_indiv(size_cromo):
+    # random initialization
+    indiv = [randint(0,1) for i in range(size_cromo)]
+    # correct for invalid genotypes
+    while evaluate_kp(phenotype_kp(indiv), items, params) == 0:
+        # take one item from the knapsack randomly
+        gene_pos = randint(0,size_cromo-1)
+        indiv[gene_pos] = 0
+
+    return indiv
+
 
 if __name__ == '__main__':
 
@@ -164,9 +201,13 @@ if __name__ == '__main__':
     mutation = sea_ttp.muta_operator
     tour_selection = sea_ttp.tour_sel(tour_size)
     sel_survivors = sea_ttp.sel_survivors_elite(elite_size)
-    gen_population = sea_ttp.gera_pop
 
-    args = [generations, population_size, size_cromo, prob_muta, prob_cross, tour_selection, crossover, mutation, sel_survivors, my_fitness, gen_population,shortest_cities,tsp_init_pop]
+    if tsp_init_pop == "random":
+        gen_population = gera_pop_ttp_random(distmat, items, params)
+    else:
+        gen_population = gera_pop_ttp_heuristic(distmat, items, params, shortest_cities)
+
+    args = [generations, population_size, size_cromo, prob_muta, prob_cross, tour_selection, crossover, mutation, sel_survivors, my_fitness, gen_population]
 
     if(development):
         if(plot_generations):

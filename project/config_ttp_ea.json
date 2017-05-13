@@ -7,17 +7,18 @@
 
     "tsp": {
     	"mutation": {
-    		"probability": 0.02
+    		"probability": 0.001
     	},
         "crossover": {
-        	"probability": 0.8
+        	"probability": 0.7
         },
+        "_help_initial_pop_" : ["random", "heuristic"],
         "initial_pop": "heuristic"
     },
 
     "kp": {
         "mutation": {
-            "probability": 0.01
+            "probability": 0.02
         },
         "crossover": {
             "probability": 0.8

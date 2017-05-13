@@ -99,8 +99,8 @@ def gera_pop(size_pop,size_cromo):
 
 def gera_indiv(size_cromo):
     # random initialization
-    indiv = [0]*size_cromo
-    #indiv = [randint(0,1) for i in range(size_cromo)]
+    #indiv = [0]*size_cromo
+    indiv = [randint(0,1) for i in range(size_cromo)]
     return indiv
 
 # Variation operators: Binary mutation	    

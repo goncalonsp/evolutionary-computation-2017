@@ -6,18 +6,17 @@ Adjusted by Sebastian Rehfeldt
 Adjusted by Gonçalo Pereira
 """
 
-from random import random,randint, sample, gauss
+from random import random,randint, sample, gauss, shuffle
 from operator import itemgetter
 from tsp import dist_heuristic_tsp_indiv_generation
-from random import shuffle
 
 import sea_tsp_permutation as sea_tsp
 import sea_bin_2016_visual as sea_kp
 
 # Simple Evolutionary Algorithm     
-def sea(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func, shortest_cities,tsp_init_pop):
+def sea(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
     # initialize population: indiv = (cromo,fit)
-    population = gen_pop_func(size_pop,size_cromo, shortest_cities,tsp_init_pop)
+    population = gen_pop_func(size_pop, size_cromo)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
     for i in range(numb_generations):
@@ -47,9 +46,9 @@ def sea(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,
     """
     return best_pop(population), population
 
-def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func, shortest_cities,tsp_init_pop):
+def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
     # initialize population: indiv = (cromo,fit)
-    population = gen_pop_func(size_pop,size_cromo, shortest_cities,tsp_init_pop)
+    population = gen_pop_func(size_pop, size_cromo)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
 
@@ -80,6 +79,9 @@ def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel
         stat.append(best_pop(population)[1])
         stat_aver.append(average_pop(population))
 
+        #print(population)
+        #input("Continue...")
+
     """
     return: the best individual found
             the population of the final generation
@@ -88,11 +90,11 @@ def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel
     """
     return best_pop(population), population, stat, stat_aver
 
-def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func, shortest_cities,tsp_init_pop):
+def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
     statistics = []
     bestTours = []
     for i in range(numb_runs):
-        best, population, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func, shortest_cities,tsp_init_pop)
+        best, population, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func)
         bestTours.append(best)
         statistics.append(stat_best)
         print("{}%".format( (i+1)*100/numb_runs ))
