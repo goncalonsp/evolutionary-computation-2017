@@ -85,19 +85,22 @@ def calc_time(pheno, distmat, items, params):
     currentWeight = calc_weight(tempPlan, items)
     velocity = vmax - currentWeight * (vmax - vmin) / totalCapacity
     time = distmat[0, phenoTour[nCities-1]] / velocity
-    length = distmat[0, phenoTour[nCities-1]]
     
     # calculate the time for all other cities in reverse
     for i in range(nCities-1, 0, -1):
 
         # update the plan since we are calculating the time from city i-1 to city i
-        # and the item in city i has not yet been picked
-        if i in tempPlan: tempPlan.remove(i)
-        # calculate the time from city i-1 to city i
+        # and the item in city i of the tour has not yet been picked
+        if phenoTour[i] in tempPlan: tempPlan.remove(phenoTour[i])
+        
+        # calculate the time from city i-1 to city i of the tour
         currentWeight = calc_weight(tempPlan, items)
         velocity = vmax - currentWeight * (vmax - vmin) / totalCapacity
         time += distmat[phenoTour[i-1], phenoTour[i]] / velocity
-        length += distmat[phenoTour[i-1], phenoTour[i]]
+
+    # from the starting point to the first city in the tour
+    # no items have been picked, no impact on velocity
+    time += distmat[0, phenoTour[0]]
 
     if time < 0:
         print(time)
