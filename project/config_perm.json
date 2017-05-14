@@ -1,5 +1,5 @@
 {
-    "use_linkern": false,
+    "use_linkern": true,
     "top_k": 5,
     "tsp": {
         "development": true,
