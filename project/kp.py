@@ -2,6 +2,7 @@
 kp.py
 Sebastian Rehfeldt, April 2017
 Gonçalo Pereira, May 2017, KP EA solver
+Reviewed by Gabriel Rodrigues
 """
 import numpy as np
 import sea_bin_2016_visual

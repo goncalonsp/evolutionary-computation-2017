@@ -2,15 +2,15 @@
     "use_linkern": false,
     "top_k": 5,
     "tsp": {
-        "development": false,
+        "development": true,
         "plot_generations": true,
-        "runs": 5,
+        "runs": 2,
         "fitness": "distance",
         "interpretation": "simple",
-        "representation": "random key",
+        "representation": "permutation",
 
     	"mutation": {
-    		"probability": 0.05,
+    		"probability": 0.02,
     		"function": "muta_int_add",
             "sigma": 0.1
     	},
@@ -22,7 +22,8 @@
         "elite_percentage": 0.1,
         "number_generations": 100,
         "size_population": 100,
-        "maximum_chromosome_size": 100
+        "maximum_chromosome_size": 100,
+        "gen_population": "random" 
     },
     "ks": {
 
