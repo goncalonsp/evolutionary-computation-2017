@@ -33,7 +33,32 @@ where `g(z)` is the total value for the picking plan `z`, as it would be compute
 
 From the formula it is clear that when the knapsack is empty the velocity is maximum and when the knapsack is full the velocity is minimum. On the other hand the rent rate `(R)` per time unit links the time to the value.
 
-# Report 
+## Proposed Approach
+
+
+
+## Contents of this project
+
+* `instances/` - Instances used for running the TTP problem;
+* `results/` - All results mentioned in the Report, as well as configuration files;
+* `README.md` - this file;
+* `RUNNING.md` - instructions on how to run all developed scripts and variations;
+* `config.py` - configurations library. Loads json files and provides helper functions regarding configuration;
+* `config*.json` - complementary configuration examples for the multiple scripts;
+* `gen_config_and_run.py` - helper tool for scripts and parameter testing;
+* `gen_pop_test.py` - Script to test the impact of different generation population algorithms for TSP using the objective function for TTP;
+* `kp.py` - KP EA, heuristics and related helper functions;
+* `read_ttp_file.py` - TTP file extension/format reading library;
+* `sea_bin_2016_visual.py` - EA algorithm using binary representation, used in KP's EA;
+* `sea_tsp_permutation.py` - EA algorithm using permutations representation, used in TSP's EA;
+* `sea_tsp_randkey.py` - EA algorithm using random key representation, used in TSP's EA;
+* `sea_ttp.py` - EA algorithm using coevolution cooperation, used in TTP's EA;
+* `tsp.py` - TSP EA, heuristics and related helper functions;
+* `ttp.py` - Heuristic approach for the TTP problem;
+* `ttp_ea.py` - TTP EA implementation;
+* `utils.py` - Miscellanea library, contains functions to plot and save graphs to file.
+
+## Report 
 
 The in-development report can be found on: https://docs.google.com/document/d/1NOPVEJ6EqHyL5s1EvfdtUGpAVchFqTb-00XmeJZgiY0/edit?usp=sharing
 
@@ -42,3 +67,4 @@ The in-development report can be found on: https://docs.google.com/document/d/1N
 
 Work based on work by Ernesto Costa. 
 See each file for appropriate credits.
+See Report for Bibliography.
