@@ -1,0 +1,11 @@
+These experiments were conducted to figure out which representation is superior and should be used later.
+It must be stated as well that the random key representation takes clearly longer to compute due to the need of sorting in every interpretation of the RK representation. This becomes even more infeasible for larger problem instances with more cities.
+Results were obtained for the instance: a280_n279_bounded-strongly-corr_01.ttp
+
+To get the results copy the configs from this folder into the project folder and run:
+
+python ttp.py -c config_perm.json instances/a280_n279_bounded-strongly-corr_01.ttp
+
+OR
+
+ python ttp.py -c config_randkey.json instances/a280_n279_bounded-strongly-corr_01.ttp
