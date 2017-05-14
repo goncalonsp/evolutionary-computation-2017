@@ -20,10 +20,10 @@
         },
         "tournament_size": 5,
         "elite_percentage": 0.1,
-        "number_generations": 100,
+        "number_generations": 1000,
         "size_population": 100,
         "maximum_chromosome_size": 100,
-        "gen_population": "dist_heuristic" 
+        "gen_population": "value_heuristic" 
     },
     "ks": {
 

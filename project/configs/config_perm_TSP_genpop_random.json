@@ -4,7 +4,7 @@
     "tsp": {
         "development": true,
         "plot_generations": true,
-        "runs": 5,
+        "runs": 2,
         "fitness": "distance",
         "interpretation": "simple",
         "representation": "permutation",
@@ -23,7 +23,7 @@
         "number_generations": 100,
         "size_population": 100,
         "maximum_chromosome_size": 100,
-        "gen_population": "dist_heuristic" 
+        "gen_population": "random" 
     },
     "ks": {
 

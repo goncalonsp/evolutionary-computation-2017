@@ -2,20 +2,20 @@
     "use_linkern": false,
     "top_k": 5,
     "tsp": {
-        "development": true,
+        "development": false,
         "plot_generations": true,
-        "runs": 2,
+        "runs": 5,
         "fitness": "distance",
         "interpretation": "simple",
         "representation": "random key",
 
     	"mutation": {
-    		"probability": 0.1,
+    		"probability": 0.05,
     		"function": "muta_int_add",
             "sigma": 0.1
     	},
         "crossover": {
-        	"probability": 0.9,
+        	"probability": 0.8,
         	"function": "max_size_cross"
         },
         "tournament_size": 5,

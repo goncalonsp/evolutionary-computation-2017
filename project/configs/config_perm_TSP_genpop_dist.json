@@ -4,7 +4,7 @@
     "tsp": {
         "development": true,
         "plot_generations": true,
-        "runs": 5,
+        "runs": 2,
         "fitness": "distance",
         "interpretation": "simple",
         "representation": "permutation",

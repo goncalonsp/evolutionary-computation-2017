@@ -7,10 +7,10 @@
         "runs": 5,
         "fitness": "distance",
         "interpretation": "simple",
-        "representation": "permutation",
+        "representation": "random key",
 
     	"mutation": {
-    		"probability": 0.02,
+    		"probability": 0.05,
     		"function": "muta_int_add",
             "sigma": 0.1
     	},
@@ -20,10 +20,9 @@
         },
         "tournament_size": 5,
         "elite_percentage": 0.1,
-        "number_generations": 100,
+        "number_generations": 1000,
         "size_population": 100,
-        "maximum_chromosome_size": 100,
-        "gen_population": "dist_heuristic" 
+        "maximum_chromosome_size": 100
     },
     "ks": {
 

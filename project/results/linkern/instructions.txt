@@ -1,0 +1,5 @@
+These results are valid for an algorithm which uses pre-calculated tsp tours using the Lin-Kernighan heuristic. Afterwards the simple Heuristic for the packing plan is used to obtain a packing plan.
+This algorithm is not an evolutionary algorithm, but used for comparison of our approach to other approaches.
+The results are given for the instances with 280 cities.
+
+To obtain the results, set "use_linkern" in the "config_perm.json" to true and run "python batch_run.py" after checking that this script uses the correct config.
