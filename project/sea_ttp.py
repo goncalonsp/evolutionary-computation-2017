@@ -4,6 +4,7 @@ A very simple EA for float representation.
 Ernesto Costa, March 2015 & February 2016
 Adjusted by Sebastian Rehfeldt
 Adjusted by Gonçalo Pereira
+Adjusted by Gabriel Rodrigues
 """
 
 from random import random,randint, sample, gauss, shuffle

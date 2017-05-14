@@ -1,3 +1,13 @@
+"""
+gen_pop_test.py
+A script file made to easily test the impact
+of different generation population algorithms
+for TSP in the objective function for TTP.
+
+Gabriel Rodrigues, May 2017
+Based on Sebastian Rehfeldt's ttp.py
+"""
+
 import os
 from read_ttp_file import readFile
 from argparse import ArgumentParser
@@ -41,17 +51,17 @@ if __name__ == '__main__':
     population_size = get_config(configs['tsp'], ['size_population'], 20)
     fitness_func = tsp.fitness_permutation(distmat)
 
-    gen_pop = tsp.heuristic_pop_generation(distmat, items)
-    heuristic_pop = gen_pop(population_size, size_cromo)
+    gen_pop = tsp.value_heuristic_pop_generation(distmat, items)
+    value_heuristic_pop = gen_pop(population_size, size_cromo)
     random_pop = sea.gera_pop(population_size, size_cromo)
 
-    heuristic_pop = [(indiv[0], fitness_func(indiv[0])) for indiv in heuristic_pop]
+    value_heuristic_pop = [(indiv[0], fitness_func(indiv[0])) for indiv in value_heuristic_pop]
     random_pop = [(indiv[0], fitness_func(indiv[0])) for indiv in random_pop]
 
     print("\n\n===================Tour length==============")
 
-    print("Heuristic population best fitness: {}".format( sea.best_pop(heuristic_pop)[1]))
-    print("Heuristic population average fitness: {}".format( sea.average_pop(heuristic_pop)))
+    print("Value Heuristic population best fitness: {}".format( sea.best_pop(value_heuristic_pop)[1]))
+    print("Value Heuristic population average fitness: {}".format( sea.average_pop(value_heuristic_pop)))
     print("Random population best fitness: {}".format( sea.best_pop(random_pop)[1]))
     print("Random population average fitness: {}".format( sea.average_pop(random_pop)))
 
@@ -59,8 +69,8 @@ if __name__ == '__main__':
     heuristic_pop_kp = np.empty(population_size, dtype=float)
     random_pop_kp = np.empty(population_size, dtype=float)
     for idx in range(population_size):
-        plan = kp.getPackingPlan(items, heuristic_pop[idx][0], distmat, params)
-        profit, time, objective = calculateObjectiveValue(heuristic_pop[idx][0],plan,distmat,params)
+        plan = kp.getPackingPlan(items, value_heuristic_pop[idx][0], distmat, params)
+        profit, time, objective = calculateObjectiveValue(value_heuristic_pop[idx][0],plan,distmat,params)
         heuristic_pop_kp[idx] = objective
 
         plan = kp.getPackingPlan(items, random_pop[idx][0], distmat, params)
@@ -69,8 +79,8 @@ if __name__ == '__main__':
 
     print("\n\n===================Objective fitness==============")
 
-    print("Heuristic population best fitness: {}".format( np.amax(heuristic_pop_kp) ))
-    print("Heuristic population average fitness: {}".format( np.mean(heuristic_pop_kp) ))
+    print("Value Heuristic population best fitness: {}".format( np.amax(heuristic_pop_kp) ))
+    print("Value Heuristic population average fitness: {}".format( np.mean(heuristic_pop_kp) ))
     print("Random population best fitness: {}".format( np.amax(random_pop_kp) ))
     print("Random population average fitness: {}".format( np.mean(random_pop_kp) ))
 

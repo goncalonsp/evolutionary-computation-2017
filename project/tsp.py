@@ -2,6 +2,7 @@
 tsp_2017.py
 Sebastian Rehfeldt, April 2017
 Based on Ernesto Costa, February 2017
+Adjusted by Gabriel Rodrigues
 """
 
 import sea_tsp_randkey
@@ -92,8 +93,8 @@ def select_best_k_tours(population,k):
 
     return tours
 
-def heuristic_pop_generation(distmat, items):
-    def _heuristic_pop_generation(size_pop, size_cromo):
+def value_heuristic_pop_generation(distmat, items):
+    def _value_heuristic_pop_generation(size_pop, size_cromo):
         # We just pick the best items because bad items could lower the value
         # of the whole city. However, "5" is an arbitrary number which should be changed
         cities_value = [ np.mean(get_best_five_items(i,items)) for i in range(1,size_cromo+1) ]
@@ -105,10 +106,10 @@ def heuristic_pop_generation(distmat, items):
         cities_value = [ (1/v) * max_value for v in cities_value ]
         cities_value = [ v/sum(cities_value) for v in cities_value ]
 
-        return [(heuristic_tsp_indiv_generation(cities_value, size_cromo),0) for i in range(size_pop)]
-    return _heuristic_pop_generation
+        return [(value_heuristic_tsp_indiv_generation(cities_value, size_cromo),0) for i in range(size_pop)]
+    return _value_heuristic_pop_generation
 
-def heuristic_tsp_indiv_generation(cities_value, size_cromo):
+def value_heuristic_tsp_indiv_generation(cities_value, size_cromo):
     indiv = list(range(1, size_cromo+1))
 
     # Pick the first city based on the probabilities of its value
@@ -174,7 +175,7 @@ def mixed_heuristic_pop_generation(distmat, items, shortest_cities):
         starting_points = starting_points[:size_pop]
 
         for i in range(value_heuristic_size):
-            pop.append((heuristic_tsp_indiv_generation(cities_value, size_cromo),0))
+            pop.append((value_heuristic_tsp_indiv_generation(cities_value, size_cromo),0))
         for i in range(dist_heuristic_size):
             pop.append((dist_heuristic_tsp_indiv_generation(starting_points.pop(0), shortest_cities, size_cromo),0))
 
@@ -238,7 +239,7 @@ def getTours(distmat, items, shortest_cities, configs, ntours):
         elif get_config(configs, ['gen_population'], "mixed_heuristic") == "mixed_heuristic":
             gen_population = mixed_heuristic_pop_generation(distmat, items,shortest_cities)
         else:
-            gen_population = heuristic_pop_generation(distmat, items)
+            gen_population = value_heuristic_pop_generation(distmat, items) # "value_heuristic"
 
     else:
         raise LookupError('Unknown representation \'{}\' chosen in configuration!'.format(representation))
