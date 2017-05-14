@@ -1,6 +1,6 @@
 # Traveling Thief Problem
 
-_See the [RUNNING](project/RUNNING.md) file for instructions on how to run the various scripts._
+_See the [RUNNING](RUNNING.md) file for instructions on how to run the various scripts._
 
 ## Project Goal
 
