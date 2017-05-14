@@ -10,6 +10,7 @@ from read_ttp_file import readFile
 from argparse import ArgumentParser
 import config
 import math
+from random import randint
 
 def get_best_five_items(city, items):
 	city_items = items[str(city)]
@@ -115,13 +116,13 @@ Evolutionary Algorithm Implementation for the KS problem
 
 ---------------------------------------------------
 """
-def fitness(items, params):
+def fitness(itemsList, params):
 	"""
-	items  
-		is a dictionary where, size N-1 (N number of cities),
-		where the key is the city number, range [1;N-1]
-		where the value an array of tuples, each representing an item
-		each tuple contains 2 values, profit and weight
+	itemsList
+		is an array, of size I (I number of Items), where
+		items[i][0] is the profit of item i
+		items[i][1] is the weight of item i
+		items[i][2] is the city where item i is located
 	params
 		is a dictionary with, as an example
 		max_speed: 1.0
@@ -135,51 +136,70 @@ def fitness(items, params):
 		dimension: 280
 	"""
 	def fitness_(indiv):
-		quali = evaluate(phenotype(indiv), items, params)
+		quali = evaluate(phenotype(indiv), itemsList, params)
 		return quali
 	return fitness_
 
 def phenotype(indiv):
-	"""from a binary string to a list of cities that are in the plan"""
-	pheno = [idx+1 for idx, val in enumerate(indiv) if val == 1]
+	"""
+	from a binary string to a list of items that are in the plan
+	pheno = [0, 3, 4, 7, 9, 15, 30, ...]
+	"""
+	pheno = [idx for idx, val in enumerate(indiv) if val == 1]
 	return pheno
 
-def calc_weight(pheno, items):
-	return sum([items[str(city)][0][1] for city in pheno])
+def calc_profit(pheno, itemsList):
+	return sum([itemsList[item][0] for item in pheno])
 
-def evaluate(pheno, items, params):
-	""" pheno = [...,2,243,15,59,...]"""
-	total_weight = calc_weight(pheno, items)
+def calc_weight(pheno, itemsList):
+	return sum([itemsList[item][1] for item in pheno])
+
+def evaluate(pheno, itemsList, params):
+	""" pheno = [0, 3, 4, 7, 9, 15, 30, ...] """
+	total_weight = calc_weight(pheno, itemsList)
 	if total_weight > params['kp_capacity']:
 		return 0
-	return sum([items[str(city)][0][0] for city in pheno])
+	return calc_profit(pheno, itemsList)
 
-def evaluate_log(pheno, items, params):
-	""" pheno = [...,2,243,15,59,...]"""
-	total_weight = calc_weight(pheno, items)
-	quality = sum([items[str(city)][0][0] for city in pheno])
+def evaluate_log(pheno, itemsList, params):
+	""" pheno = [0, 3, 4, 7, 9, 15, 30, ...] """
+	total_weight = calc_weight(pheno, itemsList)
+	quality = calc_profit(pheno, itemsList)
 	capacity = params['kp_capacity']
 	if total_weight > capacity:
-		rho = max([items[str(city)][0][0]/items[str(city)][0][1] for city in pheno])
+		rho = max([itemsList[item][0]/itemsList[item][1] for item in pheno])
 		quality -= math.log(1 + rho * (total_weight - capacity),2)
 	return quality
 
-def evaluate_quadratic(pheno, items, params):
-	""" pheno = [...,[id,weight,value],...]"""
-	total_weight = calc_weight(pheno, items)
-	quality = sum([items[str(city)][0][0] for city in pheno])
+def evaluate_quadratic(pheno, itemsList, params):
+	""" pheno = [0, 3, 4, 7, 9, 15, 30, ...] """
+	total_weight = calc_weight(pheno, itemsList)
+	quality = calc_profit(pheno, itemsList)
 	capacity = params['kp_capacity']
 	if total_weight > capacity:
-		rho = max([items[str(city)][0][0]/items[str(city)][0][1] for city in pheno])
+		rho = max([itemsList[item][0]/itemsList[item][1] for item in pheno])
 		quality -=  (rho * (total_weight - capacity))**2
 	return quality
 
-def kp_ea_solver(items, params, configs):
-	capacity = params["kp_capacity"]
-	min_speed = params["min_speed"]
-	max_speed = params["max_speed"]
-	renting_rate = params["renting_rate"]
-	n_items = params["number_of_items"]
+# EA Custom functions!
+# population generation with custom knowledge about the problem!
+def gera_pop_kp_random(fitness_fnc):
+    def gera_pop(size_pop, size_cromo):
+        return [(gera_kp_indiv(size_cromo, fitness_fnc),0) for i in range(size_pop)]
+    
+    return gera_pop
+
+def gera_kp_indiv(size_cromo, fitness_fnc):
+    # random initialization
+    indiv = [randint(0,1) for i in range(size_cromo)]
+    # correct for invalid genotypes
+    while fitness_fnc(indiv) == 0:
+        # take one item from the knapsack randomly
+        gene_pos = randint(0,size_cromo-1)
+        indiv[gene_pos] = 0
+
+    return indiv
+
 
 if __name__ == '__main__':
 
@@ -217,12 +237,12 @@ if __name__ == '__main__':
 	# Read the file
 	print("===================Instance==============")
 	print(args.INPUT)
-	distmat, items, shortest_cities, params = readFile(args.INPUT)
+	distmat, cityItems, itemsList, shortest_cities, params = readFile(args.INPUT);
 
 
 	# Define EA parameters
-	size_cromo = distmat.shape[0]-1 # as the starting and ending point is fixed
-	my_fitness = fitness(items, params)
+	size_cromo = len(itemsList)
+	my_fitness = fitness(itemsList, params)
 	sea = sea_bin_2016_visual.sea
 	sea_for_plot = sea_bin_2016_visual.sea_for_plot
 	run = sea_bin_2016_visual.run
@@ -230,7 +250,7 @@ if __name__ == '__main__':
 	mutation = sea_bin_2016_visual.muta_bin
 	tour_selection = sea_bin_2016_visual.tour_sel(tour_size)
 	sel_survivors = sea_bin_2016_visual.sel_survivors_elite(elite_size)
-	gen_population = sea_bin_2016_visual.gera_pop
+	gen_population = gera_pop_kp_random(my_fitness)
 
 	args = [generations, population_size, size_cromo, prob_muta, prob_cross, tour_selection, crossover, mutation, sel_survivors, my_fitness, gen_population]
 
@@ -240,37 +260,14 @@ if __name__ == '__main__':
 			
 			display_stat_1(stat,stat_average)
 		else:
-			best, population = sea(
-								generations,
-								population_size, 
-								size_cromo, 
-								prob_muta,
-								prob_cross,
-								tour_selection,
-								crossover,
-								mutation,
-								sel_survivors, 
-								my_fitness,
-								gen_population)
+			best, population = sea(*args)
 
 		print(best)
-		print(calc_weight(phenotype(best[0]), items))
+		print("Weight = {}\n".format(calc_weight(phenotype(best[0]), itemsList)))
 
 
 	else:
-		best, best_average, tours = run(
-										runs, 
-										generations,
-										population_size, 
-										size_cromo, 
-										prob_muta,
-										prob_cross,
-										tour_selection,
-										crossover,
-										mutation,
-										sel_survivors, 
-										my_fitness,
-										gen_population)
+		best, best_average, tours = run(runs, *args)
 
 		if(plot_generations):
 			display_stat_n(best,best_average)

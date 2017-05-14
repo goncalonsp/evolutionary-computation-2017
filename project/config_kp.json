@@ -5,12 +5,10 @@
     "runs": 1,
 
 	"mutation": {
-		"probability": 0.01,
-		"function": "muta_int_add"
+		"probability": 0.01
 	},
     "crossover": {
-    	"probability": 0.8,
-    	"function": "max_size_cross"
+    	"probability": 0.8
     },
     "tournament_size": 5,
     "elite_percentage": 0.1,

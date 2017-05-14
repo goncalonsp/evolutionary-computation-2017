@@ -7,7 +7,7 @@
 
     "tsp": {
     	"mutation": {
-    		"probability": 0.001
+    		"probability": 0.01
     	},
         "crossover": {
         	"probability": 0.7
@@ -18,7 +18,7 @@
 
     "kp": {
         "mutation": {
-            "probability": 0.02
+            "probability": 0.01
         },
         "crossover": {
             "probability": 0.8

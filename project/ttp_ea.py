@@ -13,24 +13,30 @@ from random import shuffle, randint
 
 import sea_tsp_permutation as sea_tsp
 
+# to change representation easily
 from tsp import phenotype_from_permutation as phenotype_tsp
 from tsp import evaluate as evaluate_tsp
 from kp import phenotype as phenotype_kp
 from kp import evaluate as evaluate_kp
-from kp import calc_weight
-from ttp import calculateObjectiveValue
-from tsp import dist_heuristic_tsp_indiv_generation
 
-def fitness(distmat, items, params):
+import kp
+import tsp
+
+def fitness(distmat, cityItems, itemsList, params):
     """
     distmat 
         is a matrix of distances, size N*N (N number of cities), 
         where distmat[a][b] is the distance between city a and city b
-    items  
+    cityItems  
         is a dictionary where, size N-1 (N number of cities),
         where the key is the city number, range [1;N-1]
         where the value an array of tuples, each representing an item
         each tuple contains 2 values, profit and weight
+    itemsList
+        is an array, of size I (I number of Items), where
+        items[i][0] is the profit of item i
+        items[i][1] is the weight of item i
+        items[i][2] is the city where item i is located
     params
         is a dictionary with, as an example
         max_speed: 1.0
@@ -61,19 +67,16 @@ def evaluate(pheno):
     phenoTour = pheno[0]
     phenoPlan = pheno[1]
 
-    totalValuePlan = evaluate_kp(phenoPlan, items, params)
-    # if totalValuePlan == 0:
-    #     # we have an invalid picking plan
-    #     return 0
+    totalValuePlan = evaluate_kp(phenoPlan, itemsList, params)
 
-    time = calc_time(pheno, distmat, items, params)
+    time = calc_time(pheno, distmat, cityItems, itemsList, params)
 
     # calculate the profit
     rent = params['renting_rate']
 
     return totalValuePlan - (rent * time)
 
-def calc_time(pheno, distmat, items, params):
+def calc_time(pheno, distmat, cityItems, itemsList, params):
     phenoTour = pheno[0]
     phenoPlan = pheno[1]
     nCities = len(phenoTour)
@@ -86,7 +89,7 @@ def calc_time(pheno, distmat, items, params):
     tempPlan = list(phenoPlan)
 
     # calculate the time from the last to the first city
-    currentWeight = calc_weight(tempPlan, items)
+    currentWeight = kp.calc_weight(tempPlan, itemsList)
     currentWeight = (totalCapacity if currentWeight > totalCapacity else currentWeight)
     velocity = vmax - currentWeight * (vmax - vmin) / totalCapacity
     time = distmat[0, phenoTour[nCities-1]] / velocity
@@ -96,10 +99,15 @@ def calc_time(pheno, distmat, items, params):
 
         # update the plan since we are calculating the time from city i-1 to city i
         # and the item in city i of the tour has not yet been picked
-        if phenoTour[i] in tempPlan: tempPlan.remove(phenoTour[i])
+        destinationCity = phenoTour[i]
+        # for each item from the city
+        for item in cityItems[str(destinationCity)]:
+            # remove the item index from the plan
+            itemIdx = item[2]
+            if itemIdx in tempPlan: tempPlan.remove(itemIdx)
         
         # calculate the time from city i-1 to city i of the tour
-        currentWeight = calc_weight(tempPlan, items)
+        currentWeight = kp.calc_weight(tempPlan, itemsList)
         currentWeight = (totalCapacity if currentWeight > totalCapacity else currentWeight)
         velocity = vmax - currentWeight * (vmax - vmin) / totalCapacity
         time += distmat[phenoTour[i-1], phenoTour[i]] / velocity
@@ -112,38 +120,27 @@ def calc_time(pheno, distmat, items, params):
 
 # EA Custom functions!
 # population generation with custom knowledge about the problem!
-def gera_pop_ttp_random(distmat, items, params):
+def gera_pop_ttp_random(fitness_fnc_kp):
     def gera_pop(size_pop, size_cromo):
-        return [(gera_indiv_random(size_cromo),0) for i in range(size_pop)]
+        return [(gera_indiv_random(size_cromo, fitness_fnc_kp),0) for i in range(size_pop)]
     
     return gera_pop
 
-def gera_pop_ttp_heuristic(distmat, items, params, shortest_cities):
+def gera_pop_ttp_heuristic(shortest_cities, fitness_fnc_kp):
     def gera_pop(size_pop,size_cromo):
-        starting_points = list(range(1,size_cromo))
+        starting_points = list(range(1,size_cromo[0]))
         shuffle(starting_points)
         starting_points = starting_points[:size_pop]
 
-        return [(gera_indiv_heuristic(size_cromo, starting_points.pop(0)),0) for i in range(size_pop)]
+        return [(gera_indiv_heuristic(size_cromo, fitness_fnc_kp, starting_points.pop(0)),0) for i in range(size_pop)]
 
     return gera_pop
 
-def gera_indiv_random(size_cromo):
-    return (sea_tsp.gera_indiv(size_cromo), gera_kp_indiv(size_cromo))
+def gera_indiv_random(size_cromo, fitness_fnc_kp):
+    return (sea_tsp.gera_indiv(size_cromo[0]), kp.gera_kp_indiv(size_cromo[1], fitness_fnc_kp))
 
-def gera_indiv_heuristic(size_cromo, start):
-    return (dist_heuristic_tsp_indiv_generation(start, shortest_cities, size_cromo), gera_kp_indiv(size_cromo))
-
-def gera_kp_indiv(size_cromo):
-    # random initialization
-    indiv = [randint(0,1) for i in range(size_cromo)]
-    # correct for invalid genotypes
-    while evaluate_kp(phenotype_kp(indiv), items, params) == 0:
-        # take one item from the knapsack randomly
-        gene_pos = randint(0,size_cromo-1)
-        indiv[gene_pos] = 0
-
-    return indiv
+def gera_indiv_heuristic(size_cromo, fitness_fnc_kp, start):
+    return (tsp.dist_heuristic_tsp_indiv_generation(start, shortest_cities, size_cromo[0]), kp.gera_kp_indiv(size_cromo[1], fitness_fnc_kp))
 
 
 if __name__ == '__main__':
@@ -188,12 +185,11 @@ if __name__ == '__main__':
     # Read the file
     print("===================Instance==============")
     print(args.INPUT)
-    distmat, items, shortest_cities, params = readFile(args.INPUT)
-
+    distmat, cityItems, itemsList, shortest_cities, params = readFile(args.INPUT);
 
     # Define EA parameters
-    size_cromo = distmat.shape[0]-1 # as the starting and ending point is fixed
-    my_fitness = fitness(distmat, items, params)
+    size_cromo = (distmat.shape[0]-1, len(itemsList)) # as the starting and ending point is fixed
+    my_fitness = fitness(distmat, cityItems, itemsList, params)
     sea = sea_ttp.sea
     sea_for_plot = sea_ttp.sea_for_plot
     run = sea_ttp.run
@@ -203,9 +199,9 @@ if __name__ == '__main__':
     sel_survivors = sea_ttp.sel_survivors_elite(elite_size)
 
     if tsp_init_pop == "random":
-        gen_population = gera_pop_ttp_random(distmat, items, params)
+        gen_population = gera_pop_ttp_random(kp.fitness(itemsList, params))
     else:
-        gen_population = gera_pop_ttp_heuristic(distmat, items, params, shortest_cities)
+        gen_population = gera_pop_ttp_heuristic(shortest_cities, kp.fitness(itemsList, params))
 
     args = [generations, population_size, size_cromo, prob_muta, prob_cross, tour_selection, crossover, mutation, sel_survivors, my_fitness, gen_population]
 
@@ -223,46 +219,18 @@ if __name__ == '__main__':
         if(plot_generations):
             display_stat_n(best,best_average)
 
-
-    # #return top k distinct tours as longer tours could be better for the whole problem (k in config)
-    # tours = tsp.getTours(distmat, items, configs['tsp'], top_k) #tour does not include starting and ending cities with index 0
-    # #set shortest tour as initial tour
-    # tour = tours[0][0]
-    # length = tours[0][1]
-
-    # #create plans for each tour
-    # #plan is a dict where the key is the city id and the value an array of tuples (profit,weight)
-    # plan = {}
-    # profit = 0
-    # time = 0
-    # objective = - math.inf
-
-    # for i in range(len(tours)):
-    #     cur_tour = tours[i][0]
-    #     cur_length = tours[i][1]
-    #     cur_plan = kp.getPackingPlan(items, cur_tour, distmat, params)
-    #     p, t, o = calculateObjectiveValue(cur_tour,cur_plan,distmat,params)
-    #     #print("========")
-    #     #print(cur_length)
-    #     #print(o)
-
-    #     #update everything if new tour with plan is better
-    #     if o>objective:
-    #         if(objective > - math.inf):
-    #             print("A longer tour was better")
-    #         tour = cur_tour
-    #         length = cur_length
-    #         plan = cur_plan
-    #         profit = p
-    #         time = t
-    #         objective = o
+        print("\n===================BEST OF ALL RUNS==============")
+        best = tours[0]
+        for tour in tours:
+            if tour[1] > best[1]:
+                best = tour
 
     tour = phenotype_tsp(best[0][0])
     length = evaluate_tsp(tour, distmat)
     plan = phenotype_kp(best[0][1])
-    weight = calc_weight(plan, items)
-    profit = evaluate_kp(plan, items, params)
-    time = calc_time((tour, plan), distmat, items, params)
+    weight = kp.calc_weight(plan, itemsList)
+    profit = evaluate_kp(plan, itemsList, params)
+    time = calc_time((tour, plan), distmat, cityItems, itemsList, params)
     objective = profit - time*params["renting_rate"]
 
     """             OUTPUT             """

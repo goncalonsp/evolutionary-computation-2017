@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # Read the file
     print("===================Instance==============")
     print(args.INPUT)
-    distmat, items, params = readFile(args.INPUT)
+    distmat, cityItems, itemsList, shortest_cities, params = readFile(args.INPUT);
     size_cromo = distmat.shape[0]-1 # as the starting and ending point is fixed
     population_size = get_config(configs['tsp'], ['size_population'], 20)
     fitness_func = tsp.fitness_permutation(distmat)

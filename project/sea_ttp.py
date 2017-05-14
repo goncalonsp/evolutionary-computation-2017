@@ -90,11 +90,11 @@ def sea_for_plot(numb_generations,size_pop, size_cromo, prob_mut, prob_cross,sel
     """
     return best_pop(population), population, stat, stat_aver
 
-def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
+def run(numb_runs,numb_generations,size_pop, domain, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func):
     statistics = []
     bestTours = []
     for i in range(numb_runs):
-        best, population, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func)
+        best, population, stat_best, stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func, gen_pop_func)
         bestTours.append(best)
         statistics.append(stat_best)
         print("{}%".format( (i+1)*100/numb_runs ))

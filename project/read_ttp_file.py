@@ -104,8 +104,8 @@ def readFile(file):
         shortest_cities = calculateShortestCities(distmat)
 
         #read items (index, profit, weight, assigned node number)
-        #each city stores tuples of items having a profit and weight
-        items = {}
+        #each city stores tuples of items having a profit, weight and item index
+        cityItems = {}
 
         lines = file_in.readlines()
         for line in lines:
@@ -114,13 +114,40 @@ def readFile(file):
             #datafile starts to count at 1
             #subtract 1 to match cities in items and coordinates
             node = str(int(node)-1)
-            keys = list(items.keys())
+            keys = list(cityItems.keys())
             if node in keys:
-                items[node].append((float(p),float(w)))
+                cityItems[node].append((float(p),float(w), int(n)-1))
             else:
-                items[node] = [(float(p),float(w))]
+                cityItems[node] = [(float(p),float(w), int(n)-1)]
 
-    return distmat, items, shortest_cities, problem_parameters
+        #read items (index, profit, weight, assigned node number)
+        #each position will be a item with its profit weight and assigned node number
+        """
+        itemsList = [
+            [413.0, 1000.0, 151],
+            [524.0, 1002.0, 151],
+            [142.0, 1007.0, 255],
+            [823.0, 1009.0, 255],
+            [72.0,  1008.0, 255],
+            ...,
+        ]
+        Where cityItems['151'][0][0] = itemsList[0][0]
+
+        cityItems is searchable by city index
+        itemsList is searchable by item index
+        """
+        itemsList = []
+
+        for line in lines:
+            n,p,w,node = line.split()
+            #coordinates cities and distmat start to count at 0
+            #datafile starts to count at 1
+            #subtract 1 to match cities in items and coordinates
+            node = int(node)-1
+            item = [float(p), float(w), node]
+            itemsList.append(item)
+            
+    return distmat, cityItems, itemsList, shortest_cities, problem_parameters
 
 if __name__ == '__main__':
     """ Run me directly to see how the readFile function reads the ttp files """
@@ -132,15 +159,19 @@ if __name__ == '__main__':
         help='ttp file to be read.')    
     args = parser.parse_args()
 
-    distmat, items, params = readFile(args.INPUT);
+    distmat, cityItems, itemsList, shortest_cities, params = readFile(args.INPUT);
     
     print("\ndistmat = {} length {}"
         .format(type(distmat),distmat.shape))
     print(distmat)
     
-    print("\nitems = {} length {}"
-        .format(type(items),len(items)))
-    print(items)
+    print("\ncityItems = {} length {}"
+        .format(type(cityItems),len(cityItems)))
+    print(cityItems)
+
+    print("\nitemsList = {} length {}"
+        .format(type(itemsList),len(itemsList)))
+    print(itemsList)
     
     print("\nparams = ")
     print(params)

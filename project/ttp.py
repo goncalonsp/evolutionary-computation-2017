@@ -102,11 +102,11 @@ if __name__ == '__main__':
     # Read the file
     print("===================Instance==============")
     print(args.INPUT)
-    distmat, items, shortest_cities, params = readFile(args.INPUT)
+    distmat, cityItems, itemsList, shortest_cities, params = readFile(args.INPUT);
 
     if(use_linkern):
         tour, length = readTour(tourpath)
-        plan = kp.getPackingPlan(items, tour, distmat, params)
+        plan = kp.getPackingPlan(cityItems, tour, distmat, params)
         profit, time, objective = calculateObjectiveValue(tour,plan,distmat,params)
     else:
         #TODO think about a way to combine both approaches instead of solving in sequential order (real future work)
@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
         #return top k distinct tours as longer tours could be better for the whole problem (k in config)
         #print(shortest_cities[0])
-        tours = tsp.getTours(distmat, items, shortest_cities, configs['tsp'], top_k) #tour does not include starting and ending cities with index 0
+        tours = tsp.getTours(distmat, cityItems, shortest_cities, configs['tsp'], top_k) #tour does not include starting and ending cities with index 0
         #set shortest tour as initial tour
         tour = tours[0][0]
         length = tours[0][1]
@@ -129,7 +129,7 @@ if __name__ == '__main__':
         for i in range(len(tours)):
             cur_tour = tours[i][0]
             cur_length = tours[i][1]
-            cur_plan = kp.getPackingPlan(items, cur_tour, distmat, params)
+            cur_plan = kp.getPackingPlan(cityItems, cur_tour, distmat, params)
             p, t, o = calculateObjectiveValue(cur_tour,cur_plan,distmat,params)
             #print("========")
             #print(cur_length)
