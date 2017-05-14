@@ -1,4 +1,4 @@
-# Running the various scripts
+Information on running the various scripts.
 
 # TTP combined (LinKern, TSP EA and KP heuristic)
 
