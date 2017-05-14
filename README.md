@@ -1,6 +1,6 @@
 # evolutionary-computation-2017
 
-Repository for work performed in the 2016/2017 Evolutionary Computation course from the University of Coimbra, Department of Informatics Engineering.
+Repository for work performed in the 2016/2017 Evolutionary Computation course from the [University of Coimbra](https://www.uc.pt/), [Department of Informatics Engineering](www.uc.pt/fctuc/dei/).
 
 Every file can be used freely for all purposes provided that this repository is linked to and the authors cited in the derived work.
 

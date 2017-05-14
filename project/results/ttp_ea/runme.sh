@@ -6,10 +6,10 @@ LOCATION="../../instances"
 
 declare -a instances=("a280_n279_bounded-strongly-corr_01" 
 	"a280_n1395_uncorr-similar-weights_05" 
-	"a280_n2790_uncorr_10"
-	"fnl4461_n4460_bounded-strongly-corr_01"
-	"fnl4461_n22300_uncorr-similar-weights_05"
-	"fnl4461_n44600_uncorr_10")
+	"a280_n2790_uncorr_10")
+	# "fnl4461_n4460_bounded-strongly-corr_01"
+	# "fnl4461_n22300_uncorr-similar-weights_05"
+	# "fnl4461_n44600_uncorr_10")
 
 for instance in "${instances[@]}"
 do
@@ -26,8 +26,8 @@ echo $FAIL
 
 for instance in "${instances[@]}"
 do
-	echo "Starting 30 runs for $instance"
-	$PROGRAM_CMD $PROGRAM $LOCATION/$instance.ttp -r 30 -c $CONFIG_FILE -s "${instance}_30_runs.png" &> "${instance}_30_runs.results" &
+	echo "Starting 30 run for $instance"
+	$PROGRAM_CMD $PROGRAM $LOCATION/$instance.ttp -r 30 -c $CONFIG_FILE -s "${instance}.png" &> "${instance}.results" &
 done
 
 for job in `jobs -p`
