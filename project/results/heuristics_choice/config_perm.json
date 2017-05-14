@@ -2,8 +2,8 @@
     "use_linkern": false,
     "top_k": 5,
     "tsp": {
-        "development": true,
-        "plot_generations": false,
+        "development": false,
+        "plot_generations": true,
         "runs": 5,
         "fitness": "distance",
         "interpretation": "simple",

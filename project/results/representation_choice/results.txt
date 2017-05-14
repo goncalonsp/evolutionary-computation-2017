@@ -1,0 +1,13 @@
+Permutation:
+Length   : 15768.1108544
+Profit   : 31434.0
+Time     : 17744.6892958
+Rent     : 5.61
+Objective: -68113.7069492
+
+Random Keys
+Length   : 16009.1930365
+Profit   : 30636.0
+Time     : 17321.2854458
+Rent     : 5.61
+Objective: -66536.4113509

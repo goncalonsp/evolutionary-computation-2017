@@ -2,9 +2,9 @@
     "use_linkern": false,
     "top_k": 5,
     "tsp": {
-        "development": true,
-        "plot_generations": false,
-        "runs": 5,
+        "development": false,
+        "plot_generations": true,
+        "runs": 10,
         "fitness": "distance",
         "interpretation": "simple",
         "representation": "permutation",
