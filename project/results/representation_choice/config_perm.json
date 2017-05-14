@@ -3,7 +3,7 @@
     "top_k": 5,
     "tsp": {
         "development": true,
-        "plot_generations": true,
+        "plot_generations": false,
         "runs": 5,
         "fitness": "distance",
         "interpretation": "simple",
