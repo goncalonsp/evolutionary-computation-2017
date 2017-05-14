@@ -3,6 +3,7 @@ tsp_2017.py
 Sebastian Rehfeldt, April 2017
 Based on Ernesto Costa, February 2017
 Adjusted by Gabriel Rodrigues
+Permutation representation by Gonçalo Pereira, April 2017
 """
 
 import sea_tsp_randkey

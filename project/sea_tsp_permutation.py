@@ -1,7 +1,8 @@
 """
 sea_bin.py
 A very simple EA for float representation.
-Ernesto Costa, March 2015 & February 2016
+Gonçalo Pereira, April 2017
+Based on work by Ernesto Costa, March 2015 & February 2016
 Adjusted by Sebastian Rehfeldt
 Adjusted by Gabriel Rodrigues
 """
