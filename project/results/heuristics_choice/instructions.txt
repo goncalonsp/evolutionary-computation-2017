@@ -1,2 +1,2 @@
 Change the "config_perm.json" in the project folder to the values of the given config in this folder and change the "gen_population" value to "heuristic", "random" or "dist_heuristic".
-Have a look into "batch_run.py" and apply changes to select the instances. We provide results for the instance with 280 cities (1 and 5 cities) as well as for the bigger instance with 14461 cities and one item each.
+Have a look into "batch_run.py" and apply changes to select the instances. We provide results for the a280 cities.

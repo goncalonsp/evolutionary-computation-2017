@@ -2,7 +2,7 @@
     "use_linkern": false,
     "top_k": 5,
     "tsp": {
-        "development": true,
+        "development": false,
         "plot_generations": true,
         "runs": 5,
         "fitness": "distance",
