@@ -1,6 +1,6 @@
 {
     "_use_": "Use this config file with the ttp_ea.py script",
-
+    
     "plot_generations": false,
 
     "tsp": {

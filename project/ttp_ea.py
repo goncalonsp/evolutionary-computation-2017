@@ -156,6 +156,14 @@ if __name__ == '__main__':
         '-c', '--config', type=open,
         help='Configurations file. If not provided defaults will be used!')
 
+    parser.add_argument(
+        '-r', '--runs', type=int,
+        help='Number of separate algorithm runs for statistical analysis.')
+
+    parser.add_argument(
+        '-s', '--save', type=str,
+        help='Saves plots into files.')
+
     args = parser.parse_args()
 
     # Load configuration file
@@ -177,9 +185,7 @@ if __name__ == '__main__':
 
     tour_size = config.get_config(configs, ['tournament_size'], 5)
     elite_size = config.get_config(configs, ['elite_percentage'], 0.1)
-    runs = config.get_config(configs, ['runs'], 5)
 
-    development = config.get_config(configs, ['development'], False)
     plot_generations = config.get_config(configs, ['plot_generations'], True)
     
     # Read the file
@@ -203,21 +209,26 @@ if __name__ == '__main__':
     else:
         gen_population = gera_pop_ttp_heuristic(shortest_cities, kp.fitness(itemsList, params))
 
-    args = [generations, population_size, size_cromo, prob_muta, prob_cross, tour_selection, crossover, mutation, sel_survivors, my_fitness, gen_population]
+    sea_args = [generations, population_size, size_cromo, prob_muta, prob_cross, tour_selection, crossover, mutation, sel_survivors, my_fitness, gen_population]
 
-    if(development):
-        if(plot_generations):
-            best, population, stat, stat_average = sea_for_plot(*args)
+    if args.runs == None:
+        if(plot_generations or args.save):
+            best, population, stat, stat_average = sea_for_plot(*sea_args)
             
-            display_stat_1(stat,stat_average)
+            if plot_generations:
+                display_stat_1(stat, stat_average)
+            if args.save:
+                save_stat_1(stat, stat_average, args.save)
         else:
-            best, population = sea(*args)
+            best, population = sea(*sea_args)
 
     else:
-        best, best_average, tours = run(runs, *args)
+        best, best_average, tours = run(args.runs, *sea_args)
 
         if(plot_generations):
-            display_stat_n(best,best_average)
+            display_stat_n(best, best_average)
+        if args.save:
+            save_stat_n(best, best_average, args.save)
 
         print("\n===================BEST OF ALL RUNS==============")
         best = tours[0]
@@ -234,7 +245,7 @@ if __name__ == '__main__':
     objective = profit - time*params["renting_rate"]
 
     """             OUTPUT             """
-    print("\n\n===================TOUR==============")
+    print("\n===================TOUR==============")
     print(tour)
     print("\n===================LENGTH==============")
     print(length) #linkern length is around 2613 (using MATLAB code for a280)
