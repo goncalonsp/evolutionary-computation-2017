@@ -1,0 +1,24 @@
+instances\a280_n279_bounded-strongly-corr_01.ttp
+Length	 : 2593
+Profit   : 30833.0
+Time     : 3603.1826314
+Rent     : 5.61
+Objective: 10619.1454379
+
+
+
+instances\a280_n1395_uncorr-similar-weights_05.ttp
+Length	 : 2593
+Profit   : 331364.0
+Time     : 4621.93710821
+Rent     : 72.7
+Objective: -4650.82776673
+
+
+
+instances\a280_n2790_uncorr_10.ttp
+Length	 : 2593
+Profit   : 1359241.0
+Time     : 5777.21070485
+Rent     : 208.53
+Objective: 154519.251717
