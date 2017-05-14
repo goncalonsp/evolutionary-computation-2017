@@ -1,5 +1,7 @@
 # Traveling Thief Problem
 
+_See the [RUNNING](RUNNING.md) file for instructions on how to run the various scripts._
+
 ## Project Goal
 
 The goal of this project is to implement and test an algorithmic
