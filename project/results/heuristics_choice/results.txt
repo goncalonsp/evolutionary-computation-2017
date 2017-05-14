@@ -1,0 +1,72 @@
+**** Dist heuristic ****
+
+280 cities and 1 item
+Length   : 3240
+Profit   : 29734.0
+Time     : 4553.71295312
+Rent     : 5.61
+Objective: 4187.67033298
+
+280 cities and 5 items
+Length   : 3123
+Profit   : 345622.0
+Time     : 6043.50935144
+Rent     : 72.7
+Objective: -93741.1298495
+
+280 cities and 10 items
+Length   : 3172
+Profit   : 1344097.0
+Time     : 6955.02398847
+Rent     : 208.53
+Objective: -106234.152315
+
+
+
+**** Value heuristic ****
+
+280 cities and 1 item
+Length   : 15238
+Profit   : 31835.0
+Time     : 18328.2805242
+Rent     : 5.61
+Objective: -70986.6537407
+
+280 cities and 5 items
+Length	 : 15659
+Profit   : 284943.0
+Time     : 19060.7185289
+Rent     : 72.7
+Objective: -1100771.23705
+
+280 cities and 10 items
+Length	 : 15343
+Profit   : 900034.0
+Time     : 17503.0009945
+Rent     : 208.53
+Objective: -2749866.79739
+
+
+
+**** Random ****
+
+280 cities and 1 item
+Length	 : 15153
+Profit   : 31235.0
+Time     : 17062.2605059
+Rent     : 5.61
+Objective: -64484.2814379
+
+280 cities and 5 items
+Length	 : 15051
+Profit   : 288980.0
+Time     : 18476.7697096
+Rent     : 72.7
+Objective: -1054281.15789
+
+280 cities and 1o items
+Length	 : 15233
+Profit   : 887465.0
+Time     : 17472.0433528
+Rent     : 208.53
+Objective: -2755980.20035
