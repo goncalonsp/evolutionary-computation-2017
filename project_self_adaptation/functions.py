@@ -1,51 +1,52 @@
 """
 functions.py
-Examples for function optimizattion.
-Ernesto Costa, February 2016
+Function optimization.
+Gabriel Rodrigues & Gonçalo Pereira, 2017
 """
-
-__author__ = 'Ernesto Costa'
-__date__ = 'February 2016'
-
+__author__ = 'Gabriel Rodrigues & Gonçalo Pereira'
+__date__ = 'May 2017'
 
 from utils import *
-from sea_float import *
+from random import gauss
 import numpy as np
 
+RASTRIGIN_DOMAIN = np.array([-5.12, 5.12])
+DE_JONG_F1_DOMAIN = RASTRIGIN_DOMAIN
+DE_JONG_F4_DOMAIN = np.array([-1.28, 1.28])
+SCHWEFEL_DOMAIN = np.array([-500,500])
+PLOT_SPACING = 0.05
+PLOT_SCHWEFEL_SPACING = 2.0
 
-# Fitness
-def merito(indiv):
-    return evaluate(fenotipo(indiv))
-
-def fenotipo(indiv):
-    return indiv
-
-
-def evaluate(x):
-    """Rastrigin: Rely on numpy arrays."""
-    A = 10
+# Evaluation functions
+def de_jong_f1_eval (x):
     w = np.array(x)
-    y = A*len(w)+sum( (w**2 - A* np.cos(2*np.pi*w)) )
-    return y
+    return sum( w**2 )
 
+def de_jong_f4_eval (x):
+    w = np.array(x)
+    calc_r = lambda vi,i: i * vi**4
+    r = np.fromiter((calc_r(wi,i) for i, wi in enumerate(w)), np.float, w.size)
+    return sum( r ) + gauss(0,1)
 
+def schwefel_eval (x):
+    w = np.array(x)
+    return sum( -w * np.sin( np.absolute(w)**(1/2)) )
+
+def rastrigin_eval (x):
+    A = 10
+    n = 2
+    w = np.array(x)
+    return A * n + sum( (w**2 - A * np.cos(2*np.pi*w)) )
 
 if __name__ == '__main__':
-    """WARNING: you should adapt to your case!!!"""
-    prefix = '/Users/ernestojfcosta/tmp/'
-    domain = [[-5.12,5.12],[-5.12,5.12], [-5.12,5.12]]
-    sigma = [0.5,0.8,1.0]
+    # Plot Rastrigin function #
+    plot_3d_function(rastrigin_eval, RASTRIGIN_DOMAIN, PLOT_SPACING)
 
-    #best_1 = sea_float(250, 100,domain,0.01,sigma,0.9,tour_sel(3),cross(0.3),muta_float_gaussian,sel_survivors_elite(0.1), merito)
-    #display(best_1,fenotipo)
-    
-    #best_1,best,average_pop = sea_for_plot(250, 100,domain,0.33,sigma,0.9,tour_sel(3),cross(0.5),muta_float_gaussian,sel_survivors_elite(0.1), merito)
-    #display_stat_1(best,average_pop)
-    #print(best_1)
-    
-    #boa,best_average = run(10,250, 100,domain,0.01,sigma,0.9,tour_sel(3),cross(0.3),muta_float_gaussian,sel_survivors_elite(0.1), merito)
-    #######sea_for_plot(numb_generations,size_pop, domain, prob_mut,sigma,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
-    boa,best_average = run(10,250, 100,domain,0.1,sigma,0.9,tour_sel(3),cross(0.5),muta_float_gaussian,sel_survivors_elite(0.05), merito)
-    display(boa,fenotipo)
-    print(min(boa))
-    display_stat_n(boa,best_average)
+    # Plot De Jong F1 function #
+    plot_3d_function(de_jong_f1_eval, DE_JONG_F1_DOMAIN, PLOT_SPACING)
+
+    # Plot De Jong F4 function #
+    plot_3d_function(de_jong_f4_eval, DE_JONG_F4_DOMAIN, PLOT_SPACING)
+
+    # Plot Schwefel function #
+    plot_3d_function(schwefel_eval, SCHWEFEL_DOMAIN, PLOT_SCHWEFEL_SPACING)

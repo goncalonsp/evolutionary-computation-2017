@@ -19,25 +19,30 @@ from operator import itemgetter
 # For the statistics
 def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
     statistics = []
+    best_1 = [0,1000] # minimization
+
     for i in range(numb_runs):
-        best,stat_best,stat_aver = sea_for_plot(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
+        best, stat_best, stat_aver = sea_for_plot(numb_generations, size_pop, domain, prob_mut, sigma, prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func)
         statistics.append(stat_best)
+        if best_1[1] > best[1]: # minimization
+            best_1 = best
+
     stat_gener = list(zip(*statistics))
     boa = [min(g_i) for g_i in stat_gener] # minimization
     aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
-    return boa,aver_gener
+    return best_1, boa, aver_gener
     
 def run_for_file(filename,numb_runs,numb_generations,size_pop, domain, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
     with open(filename,'w') as f_out:
         for i in range(numb_runs):
-            best= sea_float(numb_generations,size_pop, domain, prob_mut,sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
+            best = sea_float(numb_generations,size_pop, domain, prob_mut,sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
             f_out.write(str(best[1])+'\n')
 
 
 # Simple [Float] Evolutionary Algorithm    
 def sea_float(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
     """
-    inicialize population: indiv = (cromo,fit)
+    initialize population: indiv = (cromo,fit)
     domain = [...-,[inf_i, sup_i],...]
     sigma = [..., sigma_i, ...]
     """
@@ -74,7 +79,8 @@ def sea_for_plot(numb_generations,size_pop, domain, prob_mut,sigma,prob_cross,se
     populacao = [(indiv[0], fitness_func(indiv[0])) for indiv in populacao]
     
     # para a estatística
-    stat = [best_pop(populacao)[1]]
+    best_1 = best_pop(populacao)
+    stat = [best_1[1]]
     stat_aver = [average_pop(populacao)]
     
     for i in range(numb_generations):
@@ -99,10 +105,13 @@ def sea_for_plot(numb_generations,size_pop, domain, prob_mut,sigma,prob_cross,se
         populacao = [(indiv[0], fitness_func(indiv[0])) for indiv in populacao] 
     
     # Estatística
-        stat.append(best_pop(populacao)[1])
+        best_candidate = best_pop(populacao)
+        if best_1[1] > best_candidate[1]:
+            best_1 = best_candidate
+        stat.append(best_candidate[1])
         stat_aver.append(average_pop(populacao))
     
-    return best_pop(populacao),stat, stat_aver
+    return best_1, stat, stat_aver
 
 
 #Initialize population

@@ -8,6 +8,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import random
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 # auxiliary 
 def display(indiv, phenotype):
@@ -57,24 +58,26 @@ def save_stat_n(boa, average_best, file_name):
 def fun(x, y):
   return x**2 + y
 
-def plot_function(func, ):
+def plot_3d_function(func, domain, spacing):
     fig = plt.figure()
-    
+
     ax = fig.add_subplot(111, projection='3d')
-    x = y = np.arange(-3.0, 3.0, 0.05)
+    x = y = np.arange(domain[0], domain[1], spacing)
     X, Y = np.meshgrid(x, y)
-    zs = np.array([func(x,y) for x,y in zip(np.ravel(X), np.ravel(Y))])
+    zs = np.array([func([x,y]) for x,y in zip(np.ravel(X), np.ravel(Y))])
     Z = zs.reshape(X.shape)
 
-    ax.plot_surface(X, Y, Z)
+    surface = ax.plot_surface(X, Y, Z, cmap=cm.jet)
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
     ax.set_zlabel('Z Label')
 
+    fig.colorbar(surface, shrink=0.5, aspect=5)
+
     plt.show()
 
-
-    
 if __name__ == '__main__':
-    pass
+    domain = np.array([-3.0,3.0])
+    spacing = 0.05
+    plot_3d_function(fun, domain, spacing)
