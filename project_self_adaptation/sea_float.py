@@ -4,6 +4,7 @@
 sea_float.py
 A very simple EA for float representation.
 Ernesto Costa, February 2016
+Modified by Gabriel Rodrigues & Gonçalo Pereira
 """
 
 __author__ = 'Ernesto Costa'
@@ -26,6 +27,7 @@ def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross
         statistics.append(stat_best)
         if best_1[1] > best[1]: # minimization
             best_1 = best
+        print("Percentage: " + str((i + 1)*100/numb_runs) + "%")
 
     stat_gener = list(zip(*statistics))
     boa = [min(g_i) for g_i in stat_gener] # minimization
