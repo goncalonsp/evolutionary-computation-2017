@@ -14,49 +14,49 @@ from matplotlib import cm
 def display(indiv, phenotype):
     print('Chromo: %s\nFitness: %s' % (phenotype(indiv[0]),indiv[1]))
     
-def display_stat_1(best, average):
+def display_stat_1(best, average, title='Performance over generations', ylabel='Fitness'):
     generations = list(range(len(best)))
-    plt.title('Performance over generations')
+    plt.title(title)
     plt.xlabel('Generation')
-    plt.ylabel('Fitness')
+    plt.ylabel(ylabel)
     plt.plot(generations, best, label='Best')
     plt.plot(generations,average,label='Average')
     plt.legend(loc='best')
     plt.show()
 
-def save_stat_1(best, average, file_name):
+def save_stat_1(best, average, file_name, title='Performance over generations', ylabel='Fitness'):
     generations = list(range(len(best)))
-    plt.title('Performance over generations')
+    plt.title(title)
     plt.xlabel('Generation')
-    plt.ylabel('Fitness')
+    plt.ylabel(ylabel)
     plt.plot(generations, best, label='Best')
     plt.plot(generations,average,label='Average')
     plt.legend(loc='best')
     plt.savefig(file_name, bbox_inches='tight')
     
-def display_stat_n(boa, average_best):
+def display_stat_n(boa, average_best, title='Performance over generations', ylabel='Fitness'):
     generations = list(range(len(boa)))
-    plt.title('Performance over runs')
+    plt.title(title)
     plt.xlabel('Generation')
-    plt.ylabel('Fitness')
+    plt.ylabel(ylabel)
     plt.plot(generations, boa, label='Best of All')
     plt.plot(generations,average_best,label='Average of Bests')
     plt.legend(loc='best')
     plt.show()
 
-def save_stat_n(boa, average_best, file_name):
+def save_stat_n(boa, average_best, file_name, title='Performance over generations', ylabel='Fitness'):
     generations = list(range(len(boa)))
-    plt.title('Performance over runs')
+    plt.title(title)
     plt.xlabel('Generation')
-    plt.ylabel('Fitness')
+    plt.ylabel(ylabel)
     plt.plot(generations, boa, label='Best of All')
     plt.plot(generations,average_best,label='Average of Bests')
     plt.legend(loc='best')
     plt.savefig(file_name, bbox_inches='tight')
 
 
-def fun(x, y):
-  return x**2 + y
+def fun(x):
+  return x[0]**2 + x[1]
 
 def plot_3d_function(func, domain, spacing):
     fig = plt.figure()

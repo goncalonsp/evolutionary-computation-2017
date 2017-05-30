@@ -32,7 +32,7 @@ if __name__ == '__main__':
     n_runs = 10
     fitness = merito(de_jong_f4_eval) # Parameter: Evaluation function
     dimensionality = 10
-    n_generations = 250
+    n_generations = 100
     size_pop = 100
     domain = [ RASTRIGIN_DOMAIN for _ in range(dimensionality) ]
     prob_muta = 0.01
@@ -59,36 +59,38 @@ if __name__ == '__main__':
     # display(best_1, fenotipo)
     
     """ Single run, plot result, with statistics """
-    best_1, bests, average_pop = sea_for_plot(
-        n_generations, 
-        size_pop, 
-        domain, 
-        prob_muta, 
-        prob_cross, 
-        sel_parents, 
-        recombination, 
-        mutation, 
-        sel_survivors, 
-        fitness
-    )
-    print("Best:")
-    print(best_1)
-    display_stat_1(bests, average_pop)
-    
-    """ Multiple runs, plot results, with statistics """
-    # best_1, boa, best_average = run (
-    #     n_runs,
+    # best_1, bests, average_pop, bests_sigma, average_sigma = sea_for_plot(
     #     n_generations, 
-    #     size_pop,
-    #     domain,
-    #     prob_muta,
-    #     prob_cross,
-    #     sel_parents,
-    #     recombination,
-    #     mutation,
+    #     size_pop, 
+    #     domain, 
+    #     prob_muta, 
+    #     prob_cross, 
+    #     sel_parents, 
+    #     recombination, 
+    #     mutation, 
     #     sel_survivors, 
     #     fitness
     # )
+    # print("Best:")
+    # print(best_1)
+    # display_stat_1(bests, average_pop)
+    # display_stat_1(bests_sigma, average_sigma, title='Evolution of sigma over generations', ylabel='Sigma')
+    
+    """ Multiple runs, plot results, with statistics """
+    best_1, boa, bests_average, boa_sigma, bests_sigma_average = run (
+        n_runs,
+        n_generations, 
+        size_pop,
+        domain,
+        prob_muta,
+        prob_cross,
+        sel_parents,
+        recombination,
+        mutation,
+        sel_survivors, 
+        fitness
+    )
 
-    # display(best_1, fenotipo)
-    # display_stat_n(boa, best_average)
+    display(best_1, fenotipo)
+    display_stat_n(boa, bests_average)
+    display_stat_n(boa_sigma, bests_sigma_average, title='Evolution of sigma over runs', ylabel='Sigma')

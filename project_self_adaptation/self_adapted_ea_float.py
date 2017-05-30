@@ -19,19 +19,26 @@ from operator import itemgetter
 # For the statistics
 def run(numb_runs,numb_generations,size_pop, domain, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
     statistics = []
+    statistics_sigma = []
     best_1 = [0,1000] # minimization
 
     for i in range(numb_runs):
-        best, stat_best, stat_aver = sea_for_plot(numb_generations, size_pop, domain, prob_mut, prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func)
+        best, stat_best, stat_aver, stat_sigma, stat_aver_sigma = sea_for_plot(numb_generations, size_pop, domain, prob_mut, prob_cross, sel_parents, recombination, mutation, sel_survivors, fitness_func)
         statistics.append(stat_best)
+        statistics_sigma.append(stat_sigma)
         if best_1[1] > best[1]: # minimization
             best_1 = best
         print("Percentage: " + str((i + 1)*100/numb_runs) + "%")
 
     stat_gener = list(zip(*statistics))
+    stat_sigma_gener = list(zip(*statistics_sigma))
     boa = [min(g_i) for g_i in stat_gener] # minimization
+
+    boa_sigma = [g_i[ stat_gener[i].index(boa[i]) ] for i,g_i in enumerate(stat_sigma_gener)]
+
     aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
-    return best_1, boa, aver_gener
+    aver_sigma_gener = [sum(g_i)/len(g_i) for g_i in stat_sigma_gener]
+    return best_1, boa, aver_gener, boa_sigma, aver_sigma_gener
     
 def run_for_file(filename,numb_runs,numb_generations,size_pop, domain, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
     with open(filename,'w') as f_out:
@@ -85,7 +92,9 @@ def sea_for_plot(numb_generations,size_pop, domain, prob_mut,prob_cross,sel_pare
     # for statistics
     best_1 = best_pop(population)
     stat = [best_1[1]]
+    stat_sigma = [average_sigma(best_1[0])]
     stat_aver = [average_pop(population)]
+    stat_aver_sigma = [average_pop_sigma(population)]
     
     for i in range(numb_generations):
         # select parents
@@ -113,9 +122,11 @@ def sea_for_plot(numb_generations,size_pop, domain, prob_mut,prob_cross,sel_pare
         if best_1[1] > best_candidate[1]:
             best_1 = best_candidate
         stat.append(best_candidate[1])
+        stat_sigma.append(average_sigma(best_candidate[0]))
         stat_aver.append(average_pop(population))
+        stat_aver_sigma.append(average_pop_sigma(population))
     
-    return best_1, stat, stat_aver
+    return best_1, stat, stat_aver, stat_sigma, stat_aver_sigma
 
 
 #Initialize population
@@ -246,7 +257,13 @@ def best_pop(population):
     return population[0]
     
 def average_pop(population):
-    return sum([fit for cromo,fit in population])/len(population)
+    return sum( [fit for cromo,fit in population] )/len(population)
+
+def average_sigma(cromo):
+    return sum( [gene[1] for gene in cromo] )/len(cromo)
+
+def average_pop_sigma(population):
+    return sum( [average_sigma(indiv[0]) for indiv in population] )/len(population)
 
 
 if __name__ == '__main__':
