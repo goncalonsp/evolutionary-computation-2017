@@ -30,9 +30,9 @@ if __name__ == '__main__':
     # ------------------------------------------- #
 
     n_runs = 10
-    fitness = merito(de_jong_f4_eval) # Parameter: Evaluation function
-    dimensionality = 10
-    n_generations = 100
+    fitness = merito(rastrigin_eval) # Parameter: Evaluation function
+    dimensionality = 20
+    n_generations = 1000
     size_pop = 100
     domain = [ RASTRIGIN_DOMAIN for _ in range(dimensionality) ]
     prob_muta = 0.01

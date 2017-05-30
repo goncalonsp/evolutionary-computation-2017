@@ -15,6 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import random, randint, uniform, sample, shuffle, gauss
 from operator import itemgetter
+from math import fabs
 
 # For the statistics
 def run(numb_runs,numb_generations,size_pop, domain, prob_mut, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
@@ -33,7 +34,6 @@ def run(numb_runs,numb_generations,size_pop, domain, prob_mut, prob_cross,sel_pa
     stat_gener = list(zip(*statistics))
     stat_sigma_gener = list(zip(*statistics_sigma))
     boa = [min(g_i) for g_i in stat_gener] # minimization
-
     boa_sigma = [g_i[ stat_gener[i].index(boa[i]) ] for i,g_i in enumerate(stat_sigma_gener)]
 
     aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
@@ -68,7 +68,7 @@ def sea_float(numb_generations,size_pop, domain, prob_mut, prob_cross,sel_parent
         for i in range(0,size_pop-1,2):
             indiv_1= mate_pool[i]
             indiv_2 = mate_pool[i+1]
-            children = recombination(indiv_1,indiv_2, prob_cross)
+            children = recombination(indiv_1,indiv_2, prob_cross, domain)
             # print(children)
             parents.extend(children) 
 
@@ -105,7 +105,7 @@ def sea_for_plot(numb_generations,size_pop, domain, prob_mut,prob_cross,sel_pare
         for i in  range(0,size_pop-1,2):
             indiv_1= mate_pool[i]
             indiv_2 = mate_pool[i+1]
-            children = recombination(indiv_1,indiv_2, prob_cross)
+            children = recombination(indiv_1,indiv_2, prob_cross, domain)
             parents.extend(children) 
     # ------ Mutation
         descendants = []
@@ -148,17 +148,6 @@ def muta_float_gaussian(indiv, prob_muta, domain):
         cromo[i][1] = muta_float_sigma_gene(cromo[i][1], prob_muta, domain[i])
     return cromo
 
-
-""" This function doesn't use the sigma value """
-# def muta_float_uniform(indiv, prob_muta, domain, sigma):
-#     cromo = indiv[:]
-#     for i in range(len(cromo)):
-#         value = random()
-#         if value < prob_muta:
-#             cromo[i] = uniform(domain[i][0], domain[i][1])
-#     return cromo
-
-
 def muta_float_gene(gene,prob_muta, domain_i, sigma_i):
     value = random()
     new_gene = gene
@@ -177,12 +166,16 @@ def muta_float_sigma_gene(sigma_gene, prob_muta, domain):
     new_sigma = sigma_gene
     if value < prob_muta:
         muta_value = uniform(domain[0], domain[1])
-        new_sigma = sigma_gene + muta_value
+        new_sigma = fabs(sigma_gene + muta_value)
+        if new_sigma < domain[0]:
+            new_sigma = domain[0]
+        elif new_sigma > domain[1]:
+            new_sigma = domain[1]
     return new_sigma
     
 # Variation Operators : Aritmetical  Crossover
 def cross(alpha):
-    def aritmetical_cross(indiv_1,indiv_2,prob_cross):
+    def aritmetical_cross(indiv_1,indiv_2,prob_cross, domain):
         size = len(indiv_1[0])
 
         value = random()
@@ -194,12 +187,13 @@ def cross(alpha):
             for i in range(size):
                 for j in range(2):
                     f1[i][j] = alpha * cromo_1[i][j] + (1 - alpha) * cromo_2[i][j]    
-                    f2[i][j] = (1 - alpha) * cromo_1[i][j] + alpha * cromo_2[i][j]
+                    f2[i][j] = fabs((1 - alpha) * cromo_1[i][j] + alpha * cromo_2[i][j])
+                    f2[i][j] = f2[i][j] if f2[i][j] < domain[i][1] else domain[i][1]
 
             return ((f1.tolist(),0),(f2.tolist(),0))
         return  indiv_1,indiv_2
 
-    def heristical_cross(indiv_1, indiv_2, prob_cross):
+    def heristical_cross(indiv_1, indiv_2, prob_cross, domain):
         size = len(indiv_1[0])
         value = random()
         if value < prob_cross:
@@ -216,7 +210,8 @@ def cross(alpha):
             for i in range(size):
                 for j in range(2):
                     f1[i][j] = alpha2 * (worst_cromo[i][j] - best_cromo[i][j]) + best_cromo[i][j]
-                    f2[i][j] = alpha2 * (best_cromo[i][j] - worst_cromo[i][j]) + best_cromo[i][j]
+                    f2[i][j] = fabs(alpha2 * (best_cromo[i][j] - worst_cromo[i][j]) + best_cromo[i][j])
+                    f2[i][j] = f2[i][j] if f2[i][j] < domain[i][1] else domain[i][1]
             return ((f1.tolist(),0),(f2.tolist(),0))
         return indiv_1, indiv_2
     return heristical_cross
