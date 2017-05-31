@@ -124,7 +124,7 @@ def gera_indiv_float(domain):
     return [uniform(domain[i][0],domain[i][1]) for i in range(len(domain))]
 
 
-# Variation operators: ------ > gaussian float mutation        
+# Variation operators: ------ > Gaussian float mutation        
 def muta_float_gaussian(indiv, prob_muta, domain, sigma):
     cromo = indiv[:]
     for i in range(len(cromo)):
@@ -152,7 +152,7 @@ def muta_float_gene(gene,prob_muta, domain_i, sigma_i):
     return new_gene
     
     
-# Variation Operators : Aritmetical  Crossover
+# Variation Operators : Arithmetical  Crossover
 def cross(alpha):
     def aritmetical_cross(indiv_1,indiv_2,prob_cross):
         size = len(indiv_1[0])

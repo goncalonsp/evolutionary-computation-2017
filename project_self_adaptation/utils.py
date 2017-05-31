@@ -1,7 +1,7 @@
 """
 Utilities for visualization
 Ernesto Costa, February 2016
-Adjusted by Gabriel Rodrigues nad Gonçalo Pereira
+Adjusted by Gabriel Rodrigues and Gonçalo Pereira
 """
 
 import numpy as np

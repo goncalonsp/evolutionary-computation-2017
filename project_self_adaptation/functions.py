@@ -34,8 +34,8 @@ def schwefel_eval (x):
 
 def rastrigin_eval (x):
     A = 10
-    n = 2
     w = np.array(x)
+    n = w.size
     return A * n + sum( (w**2 - A * np.cos(2*np.pi*w)) )
 
 if __name__ == '__main__':

@@ -107,6 +107,12 @@ def sea_for_plot(numb_generations,size_pop, domain, prob_mut,prob_cross,sel_pare
             indiv_2 = mate_pool[i+1]
             children = recombination(indiv_1,indiv_2, prob_cross, domain)
             parents.extend(children) 
+        
+        for i in range(len(parents)):
+            for j in range(len(parents[i][0])):
+                if parents[i][0][j][1] < 0:
+                    asdad
+
     # ------ Mutation
         descendants = []
         for cromo,fit in parents:
@@ -137,15 +143,21 @@ def gera_pop(size_pop,domain):
     return [(gera_indiv_float(domain),0) for i in range(size_pop)]
 
 def gera_indiv_float(domain):
-    return [[uniform(domain[i][0],domain[i][1]), uniform(domain[i][0],domain[i][1])] for i in range(len(domain))]
+    # Domain will be [ ([-5,5],[0,10]), ...]
+    # [-5,5] is the domain of dimension 1
+    # [0,10] is the sigma domain for dimension 1
+    return [[uniform(domain[i][0][0],domain[i][0][1]), uniform(domain[i][1][0],domain[i][1][1])] for i in range(len(domain))]
 
 
 # Variation operators: ------ > gaussian float mutation        
 def muta_float_gaussian(indiv, prob_muta, domain):
+    # Domain will be [ ([-5,5],[0,10]), ...]
+    # [-5,5] is the domain of dimension 1
+    # [0,10] is the sigma domain for dimension 1
     cromo = indiv[:]
     for i in range(len(cromo)):
-        cromo[i][0] = muta_float_gene(cromo[i][0], prob_muta, domain[i], cromo[i][1])
-        cromo[i][1] = muta_float_sigma_gene(cromo[i][1], prob_muta, domain[i])
+        cromo[i][0] = muta_float_gene(cromo[i][0], prob_muta, domain[i][0], cromo[i][1])
+        cromo[i][1] = muta_float_sigma_gene(cromo[i][1], prob_muta, domain[i][1])
     return cromo
 
 def muta_float_gene(gene,prob_muta, domain_i, sigma_i):
@@ -154,28 +166,22 @@ def muta_float_gene(gene,prob_muta, domain_i, sigma_i):
     if value < prob_muta:
         muta_value = gauss(0,sigma_i)
         new_gene = gene + muta_value
-        if new_gene < domain_i[0]:
-            new_gene = domain_i[0]
-        elif new_gene > domain_i[1]:
-            new_gene = domain_i[1]
+        new_gene = constraint_value(new_gene, domain_i)
     return new_gene
 
 """ Sigma mutation with uniform distribution and domain based """
-def muta_float_sigma_gene(sigma_gene, prob_muta, domain):
+def muta_float_sigma_gene(sigma_gene, prob_muta, domain_i):
     value = random()
     new_sigma = sigma_gene
     if value < prob_muta:
-        muta_value = uniform(domain[0], domain[1])
-        new_sigma = fabs(sigma_gene + muta_value)
-        if new_sigma < domain[0]:
-            new_sigma = domain[0]
-        elif new_sigma > domain[1]:
-            new_sigma = domain[1]
+        muta_value = uniform(domain_i[0], domain_i[1])
+        new_sigma = sigma_gene + muta_value
+        new_sigma = constraint_value(new_sigma, domain_i)
     return new_sigma
     
-# Variation Operators : Aritmetical  Crossover
-def cross(alpha):
-    def aritmetical_cross(indiv_1,indiv_2,prob_cross, domain):
+# Variation Operators : Arithmetical  Crossover
+def arithmetical_cross(alpha):
+    def arithmetical_cross_(indiv_1,indiv_2,prob_cross, domain):
         size = len(indiv_1[0])
 
         value = random()
@@ -187,13 +193,22 @@ def cross(alpha):
             for i in range(size):
                 for j in range(2):
                     f1[i][j] = alpha * cromo_1[i][j] + (1 - alpha) * cromo_2[i][j]    
-                    f2[i][j] = fabs((1 - alpha) * cromo_1[i][j] + alpha * cromo_2[i][j])
-                    f2[i][j] = f2[i][j] if f2[i][j] < domain[i][1] else domain[i][1]
+                    f2[i][j] = (1 - alpha) * cromo_1[i][j] + alpha * cromo_2[i][j]
+
+                    f1[i][j] = constraint_value(f1[i][j], domain[i][j])
+                    f2[i][j] = constraint_value(f2[i][j], domain[i][j])
 
             return ((f1.tolist(),0),(f2.tolist(),0))
         return  indiv_1,indiv_2
 
-    def heristical_cross(indiv_1, indiv_2, prob_cross, domain):
+    return arithmetical_cross_
+
+def heuristical_cross(alpha):
+    def heuristical_cross_(indiv_1, indiv_2, prob_cross, domain):
+        # indiv_1 and indiv_2 will be a tuple -> (representation, fitness)
+        # Domain will be [ ([-5,5],[0,10]), ...]
+        # [-5,5] is the domain of dimension 1
+        # [0,10] is the sigma domain for dimension 1
         size = len(indiv_1[0])
         value = random()
         if value < prob_cross:
@@ -210,11 +225,15 @@ def cross(alpha):
             for i in range(size):
                 for j in range(2):
                     f1[i][j] = alpha2 * (worst_cromo[i][j] - best_cromo[i][j]) + best_cromo[i][j]
-                    f2[i][j] = fabs(alpha2 * (best_cromo[i][j] - worst_cromo[i][j]) + best_cromo[i][j])
-                    f2[i][j] = f2[i][j] if f2[i][j] < domain[i][1] else domain[i][1]
+                    f2[i][j] = alpha2 * (best_cromo[i][j] - worst_cromo[i][j]) + best_cromo[i][j]
+
+                    f1[i][j] = constraint_value(f1[i][j], domain[i][j])
+                    f2[i][j] = constraint_value(f2[i][j], domain[i][j])
+
             return ((f1.tolist(),0),(f2.tolist(),0))
         return indiv_1, indiv_2
-    return heristical_cross
+    
+    return heuristical_cross_
         
 # Tournament Selection
 def tour_sel(t_size):
@@ -260,6 +279,12 @@ def average_sigma(cromo):
 def average_pop_sigma(population):
     return sum( [average_sigma(indiv[0]) for indiv in population] )/len(population)
 
+def constraint_value(value, domain):
+    if value < domain[0]:
+        return domain[0] 
+    elif value > domain[1]:
+        return domain[1] 
+    return value
 
 if __name__ == '__main__':
     c1 = [1,2,3,4,5]

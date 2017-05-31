@@ -31,14 +31,14 @@ if __name__ == '__main__':
 
     n_runs = 10
     fitness = merito(rastrigin_eval) # Parameter: Evaluation function
-    dimensionality = 20
-    n_generations = 1000
+    dimensionality = 10
+    n_generations = 100
     size_pop = 100
-    domain = [ RASTRIGIN_DOMAIN for _ in range(dimensionality) ]
+    domain = [ (RASTRIGIN_DOMAIN,np.array([0, 1])) for _ in range(dimensionality) ]
     prob_muta = 0.01
     prob_cross = 0.9
     sel_parents = tour_sel(3) # Parameter: tournament size
-    recombination = cross(0.3) # Parameter: alpha
+    recombination = heuristical_cross(0.3) # Parameter: alpha
     mutation = muta_float_gaussian
     sel_survivors = sel_survivors_elite(0.1) # Parameter: elite ratio
 
