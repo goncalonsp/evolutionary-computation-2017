@@ -153,8 +153,8 @@ def muta_float_gene(gene,prob_muta, domain_i, sigma_i):
     
     
 # Variation Operators : Arithmetical  Crossover
-def cross(alpha):
-    def aritmetical_cross(indiv_1,indiv_2,prob_cross):
+def arithmetical_cross(alpha):
+    def arithmetical_cross_(indiv_1,indiv_2,prob_cross):
         size = len(indiv_1[0])
         value = random()
         if value < prob_cross:
@@ -167,8 +167,10 @@ def cross(alpha):
                 f2[i] = (1 - alpha) * cromo_1[i] + alpha * cromo_2[i]
             return ((f1,0),(f2,0))
         return  indiv_1,indiv_2
+    return arithmetical_cross_
 
-    def heristical_cross(indiv_1, indiv_2, prob_cross):
+def heuristical_cross(alpha):
+    def heuristical_cross_(indiv_1, indiv_2, prob_cross):
         size = len(indiv_1[0])
         value = random()
         if value < prob_cross:
@@ -186,7 +188,7 @@ def cross(alpha):
                 f2[i] = alpha2 * (best_cromo[i] - worst_cromo[i]) + best_cromo[i]
             return ((f1,0),(f2,0))
         return indiv_1, indiv_2
-    return heristical_cross
+    return heuristical_cross_
         
 # Tournament Selection
 def tour_sel(t_size):

@@ -1,0 +1,24 @@
+{
+    "problem_function": "rastrigin_eval",
+    "dimensionality": 10,
+    "domain": [-5.12, 5.12],
+
+    "runs": 10,
+
+    "number_generations": 100,
+    "size_population": 100,
+
+    "mutation": {
+        "probability": 0.01,
+        "function": "muta_float_gaussian",
+        "sigma": 0.6
+    },
+    "crossover": {
+        "probability": 0.9,
+        "alpha": 0.3,
+        "function": "heuristical_cross"
+    },
+
+    "tournament_size": 3,
+    "elite_percentage": 0.1
+}
