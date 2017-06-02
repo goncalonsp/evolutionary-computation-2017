@@ -8,7 +8,7 @@ __date__ = 'May 2017'
 
 from utils import *
 from functions import *
-from self_adapted_ea_float import *
+from sea_float_self_adaptation import *
 import numpy as np
 
 from argparse import ArgumentParser
@@ -35,7 +35,9 @@ if __name__ == '__main__':
     parser = ArgumentParser(
         description='Evolutionary Computation solver for function minimization.'
         )
-
+    parser.add_argument(
+        '-r', '--runs', type=int, nargs='?',
+        help='Number of separate algorithm runs for statistical analysis.')
     parser.add_argument(
         '-c', '--config', type=open,
         help='Configurations file. If not provided defaults will be used!')
@@ -52,7 +54,6 @@ if __name__ == '__main__':
     size_pop = config.get_config(configs, ['size_population'], 100)
     tour_size = config.get_config(configs, ['tournament_size'], 3)
     elite_size = config.get_config(configs, ['elite_percentage'], 0.1)
-    n_runs = config.get_config(configs, ['runs'], 10)
 
     problem_function = locals()[ config.get_config(configs, ['problem_function'], "rastrigin_eval") ] 
 
@@ -84,55 +85,28 @@ if __name__ == '__main__':
     sel_parents = tour_sel(tour_size) # Parameter: tournament size
     sel_survivors = sel_survivors_elite(elite_size) # Parameter: elite ratio
 
-    """ Single run, console result, no statistics """
-    # best_1 = sea_float(
-    #     n_generations, 
-    #     size_pop, 
-    #     domain, 
-    #     prob_muta, 
-    #     prob_cross, 
-    #     sel_parents, 
-    #     recombination_function, 
-    #     mutation_function, 
-    #     sel_survivors, 
-    #     fitness
-    # )
+    ea_params = [n_generations, size_pop, domain, prob_muta, prob_cross, sel_parents, recombination_function, mutation_function, sel_survivors, fitness]
+    if args.runs == None:
+        """ Single run, plot result, with statistics """
+        best_1, bests, average_pop, bests_sigma, average_sigma = sea_for_plot(*ea_params)
+        print("Best:")
+        print(best_1)
+        plt.figure(1)
+        plt.subplot(2,1,1)
+        plot_stat_1(bests, average_pop)
+        plt.subplot(2,1,2)
+        plot_stat_1(bests_sigma, average_sigma, title='Evolution of sigma over generations', ylabel='Sigma')
+        plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
+        plt.show()
+    else:
+        """ Multiple runs, plot results, with statistics """
+        best_1, boa, bests_average, boa_sigma, bests_sigma_average = run(args.runs, *ea_params)
 
-    # display(best_1, fenotipo)
-    
-    """ Single run, plot result, with statistics """
-    # best_1, bests, average_pop, bests_sigma, average_sigma = sea_for_plot(
-    #     n_generations, 
-    #     size_pop, 
-    #     domain, 
-    #     prob_muta, 
-    #     prob_cross, 
-    #     sel_parents, 
-    #     recombination_function, 
-    #     mutation_function, 
-    #     sel_survivors, 
-    #     fitness
-    # )
-    # print("Best:")
-    # print(best_1)
-    # display_stat_1(bests, average_pop)
-    # display_stat_1(bests_sigma, average_sigma, title='Evolution of sigma over generations', ylabel='Sigma')
-    
-    """ Multiple runs, plot results, with statistics """
-    best_1, boa, bests_average, boa_sigma, bests_sigma_average = run (
-        n_runs,
-        n_generations, 
-        size_pop,
-        domain,
-        prob_muta,
-        prob_cross,
-        sel_parents,
-        recombination_function,
-        mutation_function,
-        sel_survivors, 
-        fitness
-    )
-
-    display(best_1, fenotipo)
-    display_stat_n(boa, bests_average)
-    display_stat_n(boa_sigma, bests_sigma_average, title='Evolution of sigma over runs', ylabel='Sigma')
+        display(best_1, fenotipo)
+        plt.figure(1)
+        plt.subplot(2,1,1)
+        plot_stat_n(boa, bests_average)
+        plt.subplot(2,1,2)
+        plot_stat_n(boa_sigma, bests_sigma_average, title='Evolution of sigma over runs', ylabel='Sigma')
+        plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
+        plt.show()

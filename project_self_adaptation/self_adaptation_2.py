@@ -8,7 +8,7 @@ __date__ = 'May 2017'
 
 from utils import *
 from functions import *
-from sea_float import *
+from sea_float_self_adaptation2 import *
 import numpy as np
 
 from argparse import ArgumentParser
@@ -16,17 +16,20 @@ import config
 
 # Fitness
 def merito(evaluate_func):
-    def _merito(indiv):
-        return evaluate_func(fenotipo(indiv))
+    def _merito(cromo):
+        value_cromo = [gene[0] for gene in cromo]
+        return evaluate_func(fenotipo(value_cromo))
     return _merito
 
-def fenotipo(indiv):
-    return indiv
+def fenotipo(cromo):
+    return cromo
 
 if __name__ == '__main__':
+
     # ------------------------------------------- #
     # Note:                                       #
     # We are only studying minimization functions #
+    # We are self adapting the value 'sigma'      #
     # ------------------------------------------- #
 
     parser = ArgumentParser(
@@ -51,7 +54,6 @@ if __name__ == '__main__':
     size_pop = config.get_config(configs, ['size_population'], 100)
     tour_size = config.get_config(configs, ['tournament_size'], 3)
     elite_size = config.get_config(configs, ['elite_percentage'], 0.1)
-    n_runs = config.get_config(configs, ['runs'], 10)
 
     problem_function = locals()[ config.get_config(configs, ['problem_function'], "rastrigin_eval") ] 
 
@@ -60,7 +62,7 @@ if __name__ == '__main__':
 
     prob_cross = config.get_config(configs, ['crossover', 'probability'], 0.9)
     cross_alpha = config.get_config(configs, ['crossover', 'alpha'], 0.3)
-    cross_function = locals()[ config.get_config(configs, ['crossover', 'function'], "cross") ] 
+    cross_function = locals()[ config.get_config(configs, ['crossover', 'function'], "heuristical_cross") ] 
     recombination_function = cross_function(cross_alpha) # Parameter: alpha
 
     development = config.get_config(configs, ['development'], False)
@@ -69,41 +71,42 @@ if __name__ == '__main__':
     dimensionality = config.get_config(configs, ['dimensionality'], 10)
     domain_range = config.get_config(configs, ['domain'], RASTRIGIN_DOMAIN)
     
-    sigma_value = config.get_config(configs, ['mutation','sigma'], 0.6)
+    sigma_domain = config.get_config(configs, ['mutation','sigma_domain'], 0.6)
 
-    if isinstance(domain_range,list):
-        if isinstance(domain_range[0],list):
-            # the list length is used instead of the variable "dimensionality"
-            domain = domain_range
-        else:
-            domain = [ domain_range for _ in range(dimensionality) ]
-    else:
-        raise ValueError('Invalid domain value passed. Please either pick a list of floats or a list of lists of floats!')
-    
-    if isinstance(sigma_value, float):
-        # The sigma values can be set individually like so: [0.5,0.8,1.0]. 
-        # It must respect the dimensionality
-        sigma = [ sigma_value for _ in range(dimensionality) ] 
-    elif isinstance(sigma_value, list):
-        # the list length is used instead of the variable "dimensionality"
-        sigma = sigma_value
-    else:
-        raise ValueError('Invalid sigma value passed. Please either pick a float or a list of floats!')
+    if not isinstance(domain_range,list):
+        raise ValueError('Invalid domain value passed. Please choose a list of floats!')
+    if not isinstance(sigma_domain,list):
+        raise ValueError('Invalid sigma domain value passed. Please choose a list of floats!')
+
+    domain = [ (domain_range, sigma_domain) for _ in range(dimensionality) ]
+        
     
     fitness = merito(problem_function) # Parameter: Evaluation function
     sel_parents = tour_sel(tour_size) # Parameter: tournament size
     sel_survivors = sel_survivors_elite(elite_size) # Parameter: elite ratio
 
-    ea_params = [n_generations, size_pop, domain, prob_muta, sigma, prob_cross, sel_parents, recombination_function, mutation_function, sel_survivors, fitness]
+    ea_params = [n_generations, size_pop, domain, prob_muta, prob_cross, sel_parents, recombination_function, mutation_function, sel_survivors, fitness]
     if args.runs == None:
         """ Single run, plot result, with statistics """
-        best_1, bests, average_pop = sea_for_plot(*ea_params)
-
+        best_1, bests, average_pop, bests_sigma, average_sigma = sea_for_plot(*ea_params)
+        print("Best:")
         print(best_1)
-        display_stat_1(bests, average_pop)
+        plt.figure(1)
+        plt.subplot(2,1,1)
+        plot_stat_1(bests, average_pop)
+        plt.subplot(2,1,2)
+        plot_stat_1(bests_sigma, average_sigma, title='Evolution of sigma over generations', ylabel='Sigma')
+        plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
+        plt.show()
     else:
         """ Multiple runs, plot results, with statistics """
-        best_1, boa, best_average = run (n_runs, *ea_params)
+        best_1, boa, bests_average, boa_sigma, bests_sigma_average = run(args.runs, *ea_params)
 
         display(best_1, fenotipo)
-        display_stat_n(boa, best_average)
+        plt.figure(1)
+        plt.subplot(2,1,1)
+        plot_stat_n(boa, bests_average)
+        plt.subplot(2,1,2)
+        plot_stat_n(boa_sigma, bests_sigma_average, title='Evolution of sigma over runs', ylabel='Sigma')
+        plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
+        plt.show()

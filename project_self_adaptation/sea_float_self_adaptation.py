@@ -174,7 +174,7 @@ def muta_float_sigma_gene(sigma_gene, prob_muta, domain_i):
     value = random()
     new_sigma = sigma_gene
     if value < prob_muta:
-        muta_value = uniform(domain_i[0], domain_i[1])
+        muta_value = gauss(0,0.1)#uniform(domain_i[0], domain_i[1])
         new_sigma = sigma_gene + muta_value
         new_sigma = constraint_value(new_sigma, domain_i)
     return new_sigma

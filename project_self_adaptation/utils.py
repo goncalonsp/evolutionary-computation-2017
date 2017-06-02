@@ -13,28 +13,25 @@ from matplotlib import cm
 # auxiliary 
 def display(indiv, phenotype):
     print('Chromo: %s\nFitness: %s' % (phenotype(indiv[0]),indiv[1]))
-    
-def display_stat_1(best, average, title='Performance over generations', ylabel='Fitness'):
+
+def plot_stat_1(best, average, title='Performance over generations', ylabel='Fitness'):
     generations = list(range(len(best)))
     plt.title(title)
     plt.xlabel('Generation')
     plt.ylabel(ylabel)
     plt.plot(generations, best, label='Best')
     plt.plot(generations,average,label='Average')
-    plt.legend(loc='best')
+    plt.legend(loc='best')    
+
+def display_stat_1(best, average, title='Performance over generations', ylabel='Fitness'):
+    plot_stat_1(best, average, file_name, title, ylabel)
     plt.show()
 
 def save_stat_1(best, average, file_name, title='Performance over generations', ylabel='Fitness'):
-    generations = list(range(len(best)))
-    plt.title(title)
-    plt.xlabel('Generation')
-    plt.ylabel(ylabel)
-    plt.plot(generations, best, label='Best')
-    plt.plot(generations,average,label='Average')
-    plt.legend(loc='best')
+    plot_stat_1(best, average, file_name, title, ylabel)
     plt.savefig(file_name, bbox_inches='tight')
     
-def display_stat_n(boa, average_best, title='Performance over generations', ylabel='Fitness'):
+def plot_stat_n(boa, average_best, title='Performance over generations', ylabel='Fitness'):
     generations = list(range(len(boa)))
     plt.title(title)
     plt.xlabel('Generation')
@@ -42,16 +39,13 @@ def display_stat_n(boa, average_best, title='Performance over generations', ylab
     plt.plot(generations, boa, label='Best of All')
     plt.plot(generations,average_best,label='Average of Bests')
     plt.legend(loc='best')
+
+def display_stat_n(boa, average_best, title='Performance over generations', ylabel='Fitness'):
+    plot_stat_n(boa, average_best, title, ylabel)
     plt.show()
 
 def save_stat_n(boa, average_best, file_name, title='Performance over generations', ylabel='Fitness'):
-    generations = list(range(len(boa)))
-    plt.title(title)
-    plt.xlabel('Generation')
-    plt.ylabel(ylabel)
-    plt.plot(generations, boa, label='Best of All')
-    plt.plot(generations,average_best,label='Average of Bests')
-    plt.legend(loc='best')
+    plot_stat_n(boa, average_best, title, ylabel)
     plt.savefig(file_name, bbox_inches='tight')
 
 
