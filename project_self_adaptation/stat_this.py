@@ -34,6 +34,28 @@ def is_a_directory(string_arg):
         raise argparse.ArgumentTypeError(msg)
     return string_arg
 
+def evaluate_null_hypotheses(pvalue):
+    if pvalue < 0.05:
+        if pvalue < 0.01:
+            print("Verdict: we can reject H0 with a significance level of 1%")
+        else:
+            print("Verdict: we can reject H0 with a significance level of 5%")
+        return True
+    else:
+        print("Verdict: we cannot reject H0!")
+        return False
+
+def mann_whitney_test(label1, data1, label2, data2):
+    print("\nMann-Whitney test -> two samples, independent, non parametric")
+    print("Comparing '{}' with '{}' results".format(label1, label2))
+    print("H0 - the results populations have equal distributions")
+    print("H1 - the results populations have different distributions")
+    mwu = mann_whitney(data1, data2)
+    print(mwu)
+    z, r = effect_size_mw(mwu.statistic, len(data1), len(data2))
+    print("Effect size: z = {} \t r = {}".format(z, r))
+    evaluate_null_hypotheses(mwu.pvalue)
+
 def analyse_results(experiments, results):
     # results will be an array of numpy arrays
     #print(results)
@@ -44,24 +66,29 @@ def analyse_results(experiments, results):
         print("\n\nAnalysing experiment '{}' ...\n".format(experiment))
         print_describe_data(describe_data(result))
 
-        print("\nKolgomorov-Smirnov: ")
-        print(test_normal_ks(result))
-
-        print("\nShapiro-Wilk: ")
-        print(test_normal_sw(result))
-
-        #print("Test of equal variance: ")
-        #print(levene(data1))
+        print("\nShapiro-Wilk test of normality")
+        print("H0 - the distribution of the population is normal")
+        print("H1 - the distribution of the population not normal")
+        W, pvalue = test_normal_sw(result)
+        print((W, pvalue))
+        evaluate_null_hypotheses(pvalue)
 
         histogram_norm(result, experiment,'Fitness','Count' , bins=10)
-
+    
     box_plot(results,experiments)
 
-    # print("\nwilcoxon -> non parametric, two samples, dependent")
-    # print(wilcoxon(data1,data2))
+    print("\nLevene Test: test of equal variance")
+    print("Comparing '{}', '{}' and '{}' results".format(experiments[0], experiments[1], experiments[2]))
+    print("H0 - the results populations have equal variance")
+    print("H1 - the results populations have different variance")
+    W,pval = st.levene(*results, center='mean')
+    print((W,pval))
+    evaluate_null_hypotheses(pval)
 
-    # print("\nt_test_dep -> parametric, two samples, dependent")
-    # print(t_test_dep(data1,data2))
+    mann_whitney_test(experiments[0], results[0], experiments[1], results[1])
+
+    mann_whitney_test(experiments[1], results[1], experiments[2], results[2])
+
 
 if __name__ == '__main__':
     experiments = ['standard', 'self_adaptation', 'self_adaptation_2']

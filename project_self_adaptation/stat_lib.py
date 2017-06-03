@@ -160,8 +160,7 @@ def effect_size_mw(stat,n1,n2):
     mean = n1*n2/2
     std = np.sqrt(n1*n2*(n1+n2+1)/12)
     z_score = (stat - mean)/std
-    print(z_score)
-    return z_score/np.sqrt(n_ob)
+    return (z_score, z_score/np.sqrt(n_ob))
 
 def effect_size_wx(stat,n, n_ob):
     """

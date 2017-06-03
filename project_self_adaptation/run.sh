@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIGS_PATH=$1
-RUNS=30
+RUNS=100
 LIBS=$(pwd)
 
 cd $CONFIGS_PATH
