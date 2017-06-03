@@ -78,7 +78,7 @@ def analyse_results(experiments, results):
     box_plot(results,experiments)
 
     print("\nLevene Test: test of equal variance")
-    print("Comparing '{}', '{}' and '{}' results".format(experiments[0], experiments[1], experiments[2]))
+    print("Comparing '{}', '{}' and '{}' results".format(experiments[0], experiments[1]))
     print("H0 - the results populations have equal variance")
     print("H1 - the results populations have different variance")
     W,pval = st.levene(*results, center='mean')
@@ -87,11 +87,9 @@ def analyse_results(experiments, results):
 
     mann_whitney_test(experiments[0], results[0], experiments[1], results[1])
 
-    mann_whitney_test(experiments[1], results[1], experiments[2], results[2])
-
 
 if __name__ == '__main__':
-    experiments = ['standard', 'self_adaptation', 'self_adaptation_2']
+    experiments = ['standard', 'self_adaptation']
     experiments_files = [experiment + '.stats' for experiment in experiments]
 
     parser = ArgumentParser(
