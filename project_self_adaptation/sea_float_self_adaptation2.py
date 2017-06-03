@@ -144,7 +144,7 @@ def gera_indiv_float(domain):
     return [[uniform(domain[i][0][0],domain[i][0][1]), uniform(domain[i][1][0],domain[i][1][1])] for i in range(len(domain))]
 
 
-# Variation operators: ------ > gaussian float mutation        
+# Variation operators: ------ > Gaussian float mutation        
 def muta_float_gaussian(indiv, prob_muta, domain):
     # Domain will be [ ([-5,5],[0,10]), ...]
     # [-5,5] is the domain of dimension 1

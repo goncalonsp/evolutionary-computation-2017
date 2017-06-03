@@ -55,15 +55,15 @@ def sea_float(numb_generations,size_pop, domain, prob_mut, prob_cross,sel_parent
     indiv = ((..., (value_i, sigma_i), ...), fitness)
     domain = [...-,[inf_i, sup_i],...]
     """
-    
+
     population = gera_pop(size_pop,domain)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
     for i in range(numb_generations):
-    # parents selection
+        # parents selection
         mate_pool = sel_parents(population)
-    # Variation
-    # ------ Crossover
+        # Variation
+        # ------ Crossover
         parents = []
         for i in range(0,size_pop-1,2):
             indiv_1= mate_pool[i]
@@ -72,14 +72,14 @@ def sea_float(numb_generations,size_pop, domain, prob_mut, prob_cross,sel_parent
             # print(children)
             parents.extend(children) 
 
-    # ------ Mutation
+        # ------ Mutation
         descendants = []
         for cromo,fit in parents:
             new_indiv = mutation(cromo,prob_mut, domain)
             descendants.append((new_indiv,fitness_func(new_indiv)))
-    # New population
+        # New population
         population = sel_survivors(population,descendants)
-    # Evaluate the new population
+        # Evaluate the new population
         population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]     
     return best_pop(population)
 
@@ -99,31 +99,26 @@ def sea_for_plot(numb_generations,size_pop, domain, prob_mut,prob_cross,sel_pare
     for i in range(numb_generations):
         # select parents
         mate_pool = sel_parents(population)
-    # Variation
-    # ------ Crossover
+        # Variation
+        # ------ Crossover
         parents = []
         for i in  range(0,size_pop-1,2):
             indiv_1= mate_pool[i]
             indiv_2 = mate_pool[i+1]
             children = recombination(indiv_1,indiv_2, prob_cross, domain)
             parents.extend(children) 
-        
-        for i in range(len(parents)):
-            for j in range(len(parents[i][0])):
-                if parents[i][0][j][1] < 0:
-                    asdad
 
-    # ------ Mutation
+        # ------ Mutation
         descendants = []
         for cromo,fit in parents:
             new_indiv = mutation(cromo,prob_mut,domain)
             descendants.append((new_indiv,fitness_func(new_indiv)))
-    # New population
+        # New population
         population = sel_survivors(population,descendants)
-    # Evaluate new population
+        # Evaluate new population
         population = [(indiv[0], fitness_func(indiv[0])) for indiv in population] 
     
-    # Statistics
+        # Statistics
         best_candidate = best_pop(population)
         if best_1[1] > best_candidate[1]:
             best_1 = best_candidate
@@ -149,15 +144,15 @@ def gera_indiv_float(domain):
     return [[uniform(domain[i][0][0],domain[i][0][1]), uniform(domain[i][1][0],domain[i][1][1])] for i in range(len(domain))]
 
 
-# Variation operators: ------ > gaussian float mutation        
+# Variation operators: ------ > Gaussian float mutation        
 def muta_float_gaussian(indiv, prob_muta, domain):
     # Domain will be [ ([-5,5],[0,10]), ...]
     # [-5,5] is the domain of dimension 1
     # [0,10] is the sigma domain for dimension 1
     cromo = indiv[:]
     for i in range(len(cromo)):
-        cromo[i][0] = muta_float_gene(cromo[i][0], prob_muta, domain[i][0], cromo[i][1])
         cromo[i][1] = muta_float_sigma_gene(cromo[i][1], prob_muta, domain[i][1])
+        cromo[i][0] = muta_float_gene(cromo[i][0], prob_muta, domain[i][0], cromo[i][1])
     return cromo
 
 def muta_float_gene(gene,prob_muta, domain_i, sigma_i):

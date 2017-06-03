@@ -8,7 +8,7 @@ __date__ = 'May 2017'
 
 from utils import *
 from functions import *
-from sea_float_self_adaptation import *
+from sea_float_self_adaptation2 import *
 import numpy as np
 
 from argparse import ArgumentParser
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     else:
         if args.statistics == True:
             print("Running in statistics mode for {} runs...".format(args.runs))
-            run_for_file("self_adaptation.stats", args.runs, *ea_params)
+            run_for_file("self_adaptation_2.stats", args.runs, *ea_params)
         else:
             print("Running in multiple execution mode for {} runs...".format(args.runs))
             """ Multiple runs, plot results, with statistics """

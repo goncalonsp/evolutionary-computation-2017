@@ -79,7 +79,7 @@ def sea_for_plot(numb_generations,size_pop, domain, prob_mut,sigma,prob_cross,se
     populacao = gera_pop(size_pop,domain)
     # avalia população
     populacao = [(indiv[0], fitness_func(indiv[0])) for indiv in populacao]
-    
+
     # para a estatística
     best_1 = best_pop(populacao)
     stat = [best_1[1]]
@@ -88,25 +88,27 @@ def sea_for_plot(numb_generations,size_pop, domain, prob_mut,sigma,prob_cross,se
     for i in range(numb_generations):
         # selecciona progenitores
         mate_pool = sel_parents(populacao)
-    # Variation
-    # ------ Crossover
+        # Variation
+        # ------ Crossover
         progenitores = []
         for i in  range(0,size_pop-1,2):
             indiv_1= mate_pool[i]
             indiv_2 = mate_pool[i+1]
-            filhos = recombination(indiv_1,indiv_2, prob_cross)
+            filhos = recombination(indiv_1,indiv_2, prob_cross, domain)
             progenitores.extend(filhos) 
+
         # ------ Mutation
         descendentes = []
         for cromo,fit in progenitores:
             novo_indiv = mutation(cromo,prob_mut,domain,sigma)
             descendentes.append((novo_indiv,fitness_func(novo_indiv)))
+
         # New population
         populacao = sel_survivors(populacao,descendentes)
         # Avalia nova _população
-        populacao = [(indiv[0], fitness_func(indiv[0])) for indiv in populacao] 
-    
-    # Estatística
+        populacao = [(indiv[0], fitness_func(indiv[0])) for indiv in populacao]
+
+        # Estatística
         best_candidate = best_pop(populacao)
         if best_1[1] > best_candidate[1]:
             best_1 = best_candidate
@@ -131,13 +133,13 @@ def muta_float_gaussian(indiv, prob_muta, domain, sigma):
         cromo[i] = muta_float_gene(cromo[i],prob_muta, domain[i], sigma[i])
     return cromo
 
-def muta_float_uniform(indiv, prob_muta, domain, sigma):
-    cromo = indiv[:]
-    for i in range(len(cromo)):
-        value = random()
-        if value < prob_muta:
-            cromo[i] = uniform(domain[i][0], domain[i][1])
-    return cromo
+# def muta_float_uniform(indiv, prob_muta, domain, sigma):
+#     cromo = indiv[:]
+#     for i in range(len(cromo)):
+#         value = random()
+#         if value < prob_muta:
+#             cromo[i] = uniform(domain[i][0], domain[i][1])
+#     return cromo
 
 def muta_float_gene(gene,prob_muta, domain_i, sigma_i):
     value = random()
@@ -145,16 +147,13 @@ def muta_float_gene(gene,prob_muta, domain_i, sigma_i):
     if value < prob_muta:
         muta_value = gauss(0,sigma_i)
         new_gene = gene + muta_value
-        if new_gene < domain_i[0]:
-            new_gene = domain_i[0]
-        elif new_gene > domain_i[1]:
-            new_gene = domain_i[1]
+        new_gene = constraint_value(new_gene, domain_i)
     return new_gene
     
     
 # Variation Operators : Arithmetical  Crossover
 def arithmetical_cross(alpha):
-    def arithmetical_cross_(indiv_1,indiv_2,prob_cross):
+    def arithmetical_cross_(indiv_1,indiv_2,prob_cross, domain):
         size = len(indiv_1[0])
         value = random()
         if value < prob_cross:
@@ -165,12 +164,15 @@ def arithmetical_cross(alpha):
             for i in range(size):
                 f1[i] = alpha * cromo_1[i] + (1 - alpha) * cromo_2[i]
                 f2[i] = (1 - alpha) * cromo_1[i] + alpha * cromo_2[i]
+
+                f1[i] = constraint_value(f1[i], domain[i])
+                f2[i] = constraint_value(f2[i], domain[i])
             return ((f1,0),(f2,0))
         return  indiv_1,indiv_2
     return arithmetical_cross_
 
 def heuristical_cross(alpha):
-    def heuristical_cross_(indiv_1, indiv_2, prob_cross):
+    def heuristical_cross_(indiv_1, indiv_2, prob_cross, domain):
         size = len(indiv_1[0])
         value = random()
         if value < prob_cross:
@@ -186,6 +188,13 @@ def heuristical_cross(alpha):
             for i in range(size):
                 f1[i] = alpha2 * (worst_cromo[i] - best_cromo[i]) + best_cromo[i]
                 f2[i] = alpha2 * (best_cromo[i] - worst_cromo[i]) + best_cromo[i]
+            
+                f1[i] = constraint_value(f1[i], domain[i])
+                f2[i] = constraint_value(f2[i], domain[i])
+
+            if max(f1) > 500:
+                print(f1)
+                opsi
             return ((f1,0),(f2,0))
         return indiv_1, indiv_2
     return heuristical_cross_
@@ -228,6 +237,12 @@ def best_pop(populacao):
 def average_pop(populacao):
     return sum([fit for cromo,fit in populacao])/len(populacao)
 
+def constraint_value(value, domain):
+    if value < domain[0]:
+        return domain[0] 
+    elif value > domain[1]:
+        return domain[1] 
+    return value
 
 if __name__ == '__main__':
     c1 = [1,2,3,4,5]
