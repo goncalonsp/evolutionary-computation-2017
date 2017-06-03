@@ -36,11 +36,14 @@ if __name__ == '__main__':
         description='Evolutionary Computation solver for function minimization.'
         )
     parser.add_argument(
-        '-r', '--runs', type=int, nargs='?',
+        '-r', '--runs', type=int,
         help='Number of separate algorithm runs for statistical analysis.')
     parser.add_argument(
         '-c', '--config', type=open,
         help='Configurations file. If not provided defaults will be used!')
+    parser.add_argument(
+        '-t', '--statistics', action='store_true',
+        help='Statistics mode. Saves metrics about the execution to a *.stats file')
 
     args = parser.parse_args()
 
@@ -65,11 +68,8 @@ if __name__ == '__main__':
     cross_function = locals()[ config.get_config(configs, ['crossover', 'function'], "heuristical_cross") ] 
     recombination_function = cross_function(cross_alpha) # Parameter: alpha
 
-    development = config.get_config(configs, ['development'], False)
-    plot_generations = config.get_config(configs, ['plot_generations'], True)
-
     dimensionality = config.get_config(configs, ['dimensionality'], 10)
-    domain_range = config.get_config(configs, ['domain'], RASTRIGIN_DOMAIN)
+    domain_range = config.get_config(configs, ['domain'], [-5.12, 5.12])
     
     sigma_domain = config.get_config(configs, ['mutation','sigma_domain'], 0.6)
 
@@ -87,6 +87,7 @@ if __name__ == '__main__':
 
     ea_params = [n_generations, size_pop, domain, prob_muta, prob_cross, sel_parents, recombination_function, mutation_function, sel_survivors, fitness]
     if args.runs == None:
+        print("Running in single execution mode...")
         """ Single run, plot result, with statistics """
         best_1, bests, average_pop, bests_sigma, average_sigma = sea_for_plot(*ea_params)
         print("Best:")
@@ -99,14 +100,19 @@ if __name__ == '__main__':
         plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
         plt.show()
     else:
-        """ Multiple runs, plot results, with statistics """
-        best_1, boa, bests_average, boa_sigma, bests_sigma_average = run(args.runs, *ea_params)
+        if args.statistics == True:
+            print("Running in statistics mode for {} runs...".format(args.runs))
+            run_for_file("self_adaptation_2.stats", args.runs, *ea_params)
+        else:
+            print("Running in multiple execution mode for {} runs...".format(args.runs))
+            """ Multiple runs, plot results, with statistics """
+            best_1, boa, bests_average, boa_sigma, bests_sigma_average = run(args.runs, *ea_params)
 
-        display(best_1, fenotipo)
-        plt.figure(1)
-        plt.subplot(2,1,1)
-        plot_stat_n(boa, bests_average)
-        plt.subplot(2,1,2)
-        plot_stat_n(boa_sigma, bests_sigma_average, title='Evolution of sigma over runs', ylabel='Sigma')
-        plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
-        plt.show()
+            display(best_1, fenotipo)
+            plt.figure(1)
+            plt.subplot(2,1,1)
+            plot_stat_n(boa, bests_average)
+            plt.subplot(2,1,2)
+            plot_stat_n(boa_sigma, bests_sigma_average, title='Evolution of sigma over runs', ylabel='Sigma')
+            plt.tight_layout(pad=1.08, h_pad=None, w_pad=None, rect=None)
+            plt.show()

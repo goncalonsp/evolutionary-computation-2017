@@ -34,10 +34,10 @@ def run(numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross
     aver_gener =  [sum(g_i)/len(g_i) for g_i in stat_gener]
     return best_1, boa, aver_gener
     
-def run_for_file(filename,numb_runs,numb_generations,size_pop, domain, prob_mut,prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
+def run_for_file(filename,numb_runs,numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func):
     with open(filename,'w') as f_out:
         for i in range(numb_runs):
-            best = sea_float(numb_generations,size_pop, domain, prob_mut,sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
+            best = sea_float(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel_parents,recombination,mutation,sel_survivors, fitness_func)
             f_out.write(str(best[1])+'\n')
 
 

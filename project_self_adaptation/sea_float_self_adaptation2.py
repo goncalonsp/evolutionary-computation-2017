@@ -55,16 +55,15 @@ def sea_float(numb_generations,size_pop, domain, prob_mut, prob_cross,sel_parent
     indiv = ((..., (value_i, sigma_i), ...), fitness)
     domain = [...-,[inf_i, sup_i],...]
     """
-    raise Exception('Don\'t call me! I\'m not implemented :(')
 
     population = gera_pop(size_pop,domain)
     # evaluate population
     population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]
     for i in range(numb_generations):
-    # parents selection
+        # parents selection
         mate_pool = sel_parents(population)
-    # Variation
-    # ------ Crossover
+        # Variation
+        # ------ Crossover
         parents = []
         for i in range(0,size_pop-1,2):
             indiv_1= mate_pool[i]
@@ -73,14 +72,14 @@ def sea_float(numb_generations,size_pop, domain, prob_mut, prob_cross,sel_parent
             # print(children)
             parents.extend(children) 
 
-    # ------ Mutation
+        # ------ Mutation
         descendants = []
         for cromo,fit in parents:
             new_indiv = mutation(cromo,prob_mut, domain)
             descendants.append((new_indiv,fitness_func(new_indiv)))
-    # New population
+        # New population
         population = sel_survivors(population,descendants)
-    # Evaluate the new population
+        # Evaluate the new population
         population = [(indiv[0], fitness_func(indiv[0])) for indiv in population]     
     return best_pop(population)
 

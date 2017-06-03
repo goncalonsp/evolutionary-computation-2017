@@ -24,11 +24,11 @@ def plot_stat_1(best, average, title='Performance over generations', ylabel='Fit
     plt.legend(loc='best')    
 
 def display_stat_1(best, average, title='Performance over generations', ylabel='Fitness'):
-    plot_stat_1(best, average, file_name, title, ylabel)
+    plot_stat_1(best, average, title, ylabel)
     plt.show()
 
 def save_stat_1(best, average, file_name, title='Performance over generations', ylabel='Fitness'):
-    plot_stat_1(best, average, file_name, title, ylabel)
+    plot_stat_1(best, average, title, ylabel)
     plt.savefig(file_name, bbox_inches='tight')
     
 def plot_stat_n(boa, average_best, title='Performance over generations', ylabel='Fitness'):

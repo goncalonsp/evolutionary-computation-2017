@@ -33,11 +33,14 @@ if __name__ == '__main__':
         description='Evolutionary Computation solver for function minimization.'
         )
     parser.add_argument(
-        '-r', '--runs', type=int, nargs='?',
+        '-r', '--runs', type=int,
         help='Number of separate algorithm runs for statistical analysis.')
     parser.add_argument(
         '-c', '--config', type=open,
         help='Configurations file. If not provided defaults will be used!')
+    parser.add_argument(
+        '-t', '--statistics', action='store_true',
+        help='Statistics mode. Saves metrics about the execution to a *.stats file')
 
     args = parser.parse_args()
 
@@ -51,7 +54,6 @@ if __name__ == '__main__':
     size_pop = config.get_config(configs, ['size_population'], 100)
     tour_size = config.get_config(configs, ['tournament_size'], 3)
     elite_size = config.get_config(configs, ['elite_percentage'], 0.1)
-    n_runs = config.get_config(configs, ['runs'], 10)
 
     problem_function = locals()[ config.get_config(configs, ['problem_function'], "rastrigin_eval") ] 
 
@@ -60,14 +62,11 @@ if __name__ == '__main__':
 
     prob_cross = config.get_config(configs, ['crossover', 'probability'], 0.9)
     cross_alpha = config.get_config(configs, ['crossover', 'alpha'], 0.3)
-    cross_function = locals()[ config.get_config(configs, ['crossover', 'function'], "cross") ] 
+    cross_function = locals()[ config.get_config(configs, ['crossover', 'function'], "heuristical_cross") ] 
     recombination_function = cross_function(cross_alpha) # Parameter: alpha
 
-    development = config.get_config(configs, ['development'], False)
-    plot_generations = config.get_config(configs, ['plot_generations'], True)
-
     dimensionality = config.get_config(configs, ['dimensionality'], 10)
-    domain_range = config.get_config(configs, ['domain'], RASTRIGIN_DOMAIN)
+    domain_range = config.get_config(configs, ['domain'], [-5.12, 5.12])
     
     sigma_value = config.get_config(configs, ['mutation','sigma'], 0.6)
 
@@ -95,15 +94,22 @@ if __name__ == '__main__':
     sel_survivors = sel_survivors_elite(elite_size) # Parameter: elite ratio
 
     ea_params = [n_generations, size_pop, domain, prob_muta, sigma, prob_cross, sel_parents, recombination_function, mutation_function, sel_survivors, fitness]
+    
     if args.runs == None:
+        print("Running in single execution mode...")
         """ Single run, plot result, with statistics """
         best_1, bests, average_pop = sea_for_plot(*ea_params)
 
         print(best_1)
         display_stat_1(bests, average_pop)
     else:
-        """ Multiple runs, plot results, with statistics """
-        best_1, boa, best_average = run (n_runs, *ea_params)
+        if args.statistics == True:
+            print("Running in statistics mode for {} runs...".format(args.runs))
+            run_for_file("standard.stats", args.runs, *ea_params)
+        else:
+            print("Running in multiple execution mode for {} runs...".format(args.runs))
+            """ Multiple runs, plot results, with statistics """
+            best_1, boa, best_average = run (args.runs, *ea_params)
 
-        display(best_1, fenotipo)
-        display_stat_n(boa, best_average)
+            display(best_1, fenotipo)
+            display_stat_n(boa, best_average)
