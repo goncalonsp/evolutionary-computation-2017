@@ -9,7 +9,7 @@
     "mutation": {
         "probability": 0.1,
         "function": "muta_float_gaussian",
-        "sigma": 0.5
+        "sigma": 0.05
     },
     "crossover": {
         "probability": 0.9,

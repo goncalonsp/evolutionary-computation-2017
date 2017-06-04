@@ -7,12 +7,12 @@
     "size_population": 100,
 
     "mutation": {
-        "probability": 0.01,
+        "probability": 0.1,
         "function": "muta_float_gaussian",
-        "sigma_domain": [0, 1]
+        "sigma_domain": [0, 200.0]
     },
     "crossover": {
-        "probability": 0.9,
+        "probability": 0.8,
         "alpha": 0.3,
         "function": "heuristical_cross"
     },

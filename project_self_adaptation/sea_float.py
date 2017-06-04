@@ -61,7 +61,7 @@ def sea_float(numb_generations,size_pop, domain, prob_mut, sigma, prob_cross,sel
         for i in  range(0,size_pop-1,2):
             indiv_1= mate_pool[i]
             indiv_2 = mate_pool[i+1]
-            filhos = recombination(indiv_1,indiv_2, prob_cross)
+            filhos = recombination(indiv_1,indiv_2, prob_cross, domain)
             progenitores.extend(filhos) 
         # ------ Mutation
         descendentes = []

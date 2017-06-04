@@ -8,7 +8,7 @@ __date__ = 'May 2017'
 
 from utils import *
 from functions import *
-from sea_float_self_adaptation2 import *
+from sea_float_self_adaptation import *
 import numpy as np
 
 from argparse import ArgumentParser
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     dimensionality = config.get_config(configs, ['dimensionality'], 10)
     domain_range = config.get_config(configs, ['domain'], [-5.12, 5.12])
     
-    sigma_domain = config.get_config(configs, ['mutation','sigma_domain'], 0.6)
+    sigma_domain = config.get_config(configs, ['mutation','sigma_domain'], [0, 1])
 
     if not isinstance(domain_range,list):
         raise ValueError('Invalid domain value passed. Please choose a list of floats!')
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     else:
         if args.statistics == True:
             print("Running in statistics mode for {} runs...".format(args.runs))
-            run_for_file("self_adaptation_2.stats", args.runs, *ea_params)
+            run_for_file("self_adaptation.stats", args.runs, *ea_params)
         else:
             print("Running in multiple execution mode for {} runs...".format(args.runs))
             """ Multiple runs, plot results, with statistics """
