@@ -78,7 +78,7 @@ def analyse_results(experiments, results):
     box_plot(results,experiments)
 
     print("\nLevene Test: test of equal variance")
-    print("Comparing '{}', '{}' and '{}' results".format(experiments[0], experiments[1]))
+    print("Comparing '{}' and '{}' results".format(experiments[0], experiments[1]))
     print("H0 - the results populations have equal variance")
     print("H1 - the results populations have different variance")
     W,pval = st.levene(*results, center='mean')

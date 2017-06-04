@@ -60,4 +60,4 @@ if __name__ == '__main__':
     # Plot Schwefel function #
     plot_3d_function(schwefel_eval, SCHWEFEL_DOMAIN, PLOT_SCHWEFEL_SPACING)
 
-    plot_3d_function(griewangk_eval, [-600,600], 5)
+    plot_3d_function(griewangk_eval, [-10,10], 0.1)
