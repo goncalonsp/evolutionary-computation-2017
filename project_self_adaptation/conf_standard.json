@@ -12,7 +12,7 @@
         "sigma": 0.5
     },
     "crossover": {
-        "probability": 0.9,
+        "probability": 0.7,
         "alpha": 0.3,
         "function": "heuristical_cross"
     },
