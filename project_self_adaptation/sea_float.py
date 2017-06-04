@@ -192,9 +192,6 @@ def heuristical_cross(alpha):
                 f1[i] = constraint_value(f1[i], domain[i])
                 f2[i] = constraint_value(f2[i], domain[i])
 
-            if max(f1) > 500:
-                print(f1)
-                opsi
             return ((f1,0),(f2,0))
         return indiv_1, indiv_2
     return heuristical_cross_

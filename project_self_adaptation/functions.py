@@ -38,6 +38,15 @@ def rastrigin_eval (x):
     n = w.size
     return A * n + sum( (w**2 - A * np.cos(2*np.pi*w)) )
 
+def griewangk_eval(x):
+    """F6 Griewank's function"""
+    # based on http://www.cs.unm.edu/~neal.holts/dga/benchmarkFunction/griewank.html
+    xi = np.array(x)
+    p2 = 1
+    for i in range(len(x)):
+        p2 *= np.cos(x[i] / np.sqrt(i+1))
+    return 1 + sum( xi**2 ) / 4000.0 - p2
+
 if __name__ == '__main__':
     # Plot Rastrigin function #
     plot_3d_function(rastrigin_eval, RASTRIGIN_DOMAIN, PLOT_SPACING)
@@ -50,3 +59,5 @@ if __name__ == '__main__':
 
     # Plot Schwefel function #
     plot_3d_function(schwefel_eval, SCHWEFEL_DOMAIN, PLOT_SCHWEFEL_SPACING)
+
+    plot_3d_function(griewangk_eval, [-600,600], 5)

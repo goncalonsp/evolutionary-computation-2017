@@ -1,7 +1,7 @@
 {
-    "problem_function": "de_jong_f4_eval",
+    "problem_function": "griewangk_eval",
     "dimensionality": 20,
-    "domain": [-1.28, 1.28],
+    "domain": [-600, 600],
 
     "number_generations": 1000,
     "size_population": 100,
@@ -9,10 +9,10 @@
     "mutation": {
         "probability": 0.1,
         "function": "muta_float_gaussian",
-        "sigma": 0.05
+        "sigma_domain": [0, 200]
     },
     "crossover": {
-        "probability": 0.9,
+        "probability": 0.8,
         "alpha": 0.3,
         "function": "heuristical_cross"
     },
