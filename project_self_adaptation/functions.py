@@ -49,15 +49,16 @@ def griewangk_eval(x):
 
 if __name__ == '__main__':
     # Plot Rastrigin function #
-    plot_3d_function(rastrigin_eval, RASTRIGIN_DOMAIN, PLOT_SPACING)
+    # plot_3d_function(rastrigin_eval, RASTRIGIN_DOMAIN, PLOT_SPACING)
 
     # Plot De Jong F1 function #
-    plot_3d_function(de_jong_f1_eval, DE_JONG_F1_DOMAIN, PLOT_SPACING)
+    # plot_3d_function(de_jong_f1_eval, DE_JONG_F1_DOMAIN, PLOT_SPACING)
 
     # Plot De Jong F4 function #
-    plot_3d_function(de_jong_f4_eval, DE_JONG_F4_DOMAIN, PLOT_SPACING)
+    # plot_3d_function(de_jong_f4_eval, DE_JONG_F4_DOMAIN, PLOT_SPACING)
 
     # Plot Schwefel function #
-    plot_3d_function(schwefel_eval, SCHWEFEL_DOMAIN, PLOT_SCHWEFEL_SPACING)
+    # plot_3d_function(schwefel_eval, SCHWEFEL_DOMAIN, PLOT_SCHWEFEL_SPACING)
 
     plot_3d_function(griewangk_eval, [-600,600], 5)
+    plot_3d_function(griewangk_eval, [-100,100], 5)
